@@ -1,1 +1,1 @@
-# tekislauta-code
+# tekislauta
