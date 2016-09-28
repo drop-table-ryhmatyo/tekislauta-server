@@ -21,10 +21,3 @@ CREATE TABLE Post
     subject varchar(64) NULL,
     message text NOT NULL -- either an image or a message...at this point we only support messages only ~ 26-09-2016 cxcorp
 );
-
-CREATE TABLE Thread
-(
-    id integer PRIMARY KEY, -- same as the first posts id
-    header varchar(32) NOT NULL,
-    posted datetime NOT NULL -- required?
-);
