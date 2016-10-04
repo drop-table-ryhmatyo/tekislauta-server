@@ -5,19 +5,26 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE Board
 (
-    id integer PRIMARY KEY,
+    id integer,
     name varchar(64) NOT NULL,        -- e.g. "Random"
     abbreviation varchar(4) NOT NULL, -- e.g. "b"
-    description varchar(1028) NULL -- e.g. "The stories and information posted here are artistic works of..."
+    description varchar(1024) NULL, -- e.g. "The stories and information posted here are artistic works of..."
+
+   PRIMARY KEY (id)
 );
 
 CREATE TABLE Post
 (
-    id integer PRIMARY KEY,
-    board_id integer NOT NULL REFERENCES Board(id),
-    topic_id integer NULL REFERENCES Post(id), -- a post is a thread starter if topic_id is NULL
+    id integer,
+    board_id integer NOT NULL,
+    topic_id integer NULL, -- a post is a thread starter if topic_id is NULL
+    
     ip blob NOT NULL,
     posted datetime NOT NULL,
     subject varchar(64) NULL,
-    message text NOT NULL -- either an image or a message...at this point we only support messages only ~ 26-09-2016 cxcorp
+    message text NOT NULL, -- either an image or a message...at this point we only support messages only ~ 26-09-2016 cxcorp
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (board_id) REFERENCES Board(id),
+    FOREIGN KEY (topic_id) REFERENCES Post(id)
 );
