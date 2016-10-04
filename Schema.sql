@@ -9,8 +9,8 @@ CREATE TABLE Board
     name varchar(64) NOT NULL,        -- e.g. "Random"
     abbreviation varchar(4) NOT NULL, -- e.g. "b"
     description varchar(1024) NULL, -- e.g. "The stories and information posted here are artistic works of..."
-
-   PRIMARY KEY (id)
+    
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE Post
