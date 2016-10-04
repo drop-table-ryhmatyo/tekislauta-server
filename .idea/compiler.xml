@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="tekislauta-code" />
+        <module name="tekislauta-server" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="tekislauta-code" target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="tekislauta-server" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

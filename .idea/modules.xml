@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/tekislauta-code.iml" filepath="$PROJECT_DIR$/tekislauta-code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tekislauta-server.iml" filepath="$PROJECT_DIR$/tekislauta-server.iml" />
     </modules>
   </component>
 </project>
