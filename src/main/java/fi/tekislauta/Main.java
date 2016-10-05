@@ -5,7 +5,7 @@ import fi.tekislauta.db.*;
 
 public class Main {
     public static void main(String[] args) {
-        port(80);
+        port(8080);
 
         Database db = new Database();
         get("/api", (req, res) -> {
