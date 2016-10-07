@@ -15,7 +15,7 @@ public class Database {
 
     void connect() {
         try {
-            this._dbConn = DriverManager.getConnection("jdbc:sqlite:db/tekislauta.db");
+            this._dbConn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH);
             this._dbStmt = this._dbConn.createStatement();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
