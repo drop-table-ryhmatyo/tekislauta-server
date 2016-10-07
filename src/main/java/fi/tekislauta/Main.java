@@ -16,5 +16,9 @@ public class Main {
             return db.executeQuery("SELECT * FROM Board WHERE abbreviation='" + req.params("id") + "'");
         });
 
+        get("/api/posts/:id", (req,res) -> {
+            return "Hello world!";
+        });
+
     }
 }
