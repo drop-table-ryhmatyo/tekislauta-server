@@ -26,6 +26,7 @@ public class Main {
         });
 
         get("/api/test", (req, res) -> {
+            res.header("Content-Type","application/json");
             Board b = new Board(1, "Koulu", "Kumpula", "uliopisto");
             b.addPost(new Post(1,1,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
 
