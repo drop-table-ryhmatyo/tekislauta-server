@@ -1,10 +1,14 @@
 package fi.tekislauta.models;
 
+<<<<<<< HEAD
 import fi.tekislauta.db.Database;
 
 import java.security.Timestamp;
 
 public class Post implements Resolvable{
+=======
+public class Post {
+>>>>>>> 7df1f1abe42d855a6df21de63833cad8090d4ac1
 
     private int id;
     private Integer topic_id;

@@ -22,18 +22,15 @@ public class Board implements Resolvable{
         this.abbreviation = abbreviation;
         this.description = description;
         this.threads = new ArrayList<>();
-
     }
 
     public Board() {
 
     }
 
-    public void addPost(Post post) {
-
+    public void addThread(Post post) {
         this.threads.add(post);
     }
-
 
     public int getId() {
         return id;

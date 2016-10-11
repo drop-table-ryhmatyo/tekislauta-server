@@ -19,7 +19,7 @@ public class Webserver {
         Database db = new Database();
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            res.header("Content-Type","application/json");
+            res.header("Content-Type","application/json; charset=utf-8");
             Board b = new Board();
             db.resolve(b,req.params("abbreviation"));
             return gson.toJson(b);
