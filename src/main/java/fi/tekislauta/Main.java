@@ -26,7 +26,7 @@ public class Main {
         });
 
         get("/api/test", (req, res) -> {
-            res.header("Content-Type","application/json");
+            res.header("Content-Type","application/json; charset=utf-8");
             Board b = new Board(0, "Koulu", "k", "uliopisto");
             b.addThread(new Post(0, null, 12345, 123, "Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
 
