@@ -25,7 +25,7 @@ public class Board implements Resolvable{
     }
 
     public Board() {
-
+        this.threads = new ArrayList<>();
     }
 
     public void addThread(Post post) {
@@ -72,12 +72,29 @@ public class Board implements Resolvable{
 
         ResultSet rs = statement.executeQuery();
 
-            this.id = rs.getInt(1);
-            this.name = rs.getString(2);
-            this.abbreviation = abbreviation;
-            this.description = rs.getString(4);
+        if (!rs.next())
+            return null;
 
+        this.id = rs.getInt(1);
+        this.name = rs.getString(2);
+        this.abbreviation = abbreviation;
+        this.description = rs.getString(4);
+
+        PreparedStatement postStatement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_id =  ?");
+        postStatement.setInt(1, this.id);
+
+        ResultSet postRes = postStatement.executeQuery();
+        while (postRes.next()) {
+                Post p = new Post(
+                    postRes.getInt(1),
+                    (Integer)postRes.getObject("topic_id"),
+                    postRes.getInt(4),
+                    postRes.getInt(5),
+                    postRes.getString(6),
+                    postRes.getString(7)
+                );
+                this.threads.add(p);
+            }
         return this;
-
     }
 }
