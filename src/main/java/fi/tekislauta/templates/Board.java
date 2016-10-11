@@ -8,7 +8,7 @@ public class Board {
     private String name;
     private String abbreviation;
     private String description;
-    private List posts;
+    private List<Post> posts;
 
     public Board(int id, String name, String abbreviation, String description) {
         this.id = id;
@@ -18,6 +18,12 @@ public class Board {
         this.posts = new ArrayList<>();
 
     }
+
+    public void addPost(Post post) {
+
+        this.posts.add(post);
+    }
+
 
     public int getId() {
         return id;

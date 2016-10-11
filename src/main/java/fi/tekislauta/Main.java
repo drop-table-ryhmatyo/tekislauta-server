@@ -2,10 +2,18 @@ package fi.tekislauta;
 
 import static spark.Spark.*;
 import fi.tekislauta.db.*;
+import com.google.gson.*;
+import fi.tekislauta.templates.Board;
+import fi.tekislauta.templates.Post;
+
+import java.security.Timestamp;
+import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
-        port(8080);
+        port(80);
+
+        Gson gson = new Gson();
 
         Database db = new Database();
         get("/api", (req, res) -> {
@@ -20,5 +28,15 @@ public class Main {
             return "Hello world!";
         });
 
+        get("/api/test", (req, res) -> {
+            Board b = new Board(1, "Koulu", "Kumpula", "uliopisto");
+            b.addPost(new Post(1,1,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia");
+
+
+            b.addPost(new Post(2,2,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia");
+
+            return gson.toJson(b);
+
+        });
     }
 }
