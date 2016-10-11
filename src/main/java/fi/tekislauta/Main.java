@@ -3,15 +3,12 @@ package fi.tekislauta;
 import static spark.Spark.*;
 import fi.tekislauta.db.*;
 import com.google.gson.*;
-import fi.tekislauta.templates.Board;
-import fi.tekislauta.templates.Post;
-
-import java.security.Timestamp;
-import java.util.Date;
+import fi.tekislauta.models.Board;
+import fi.tekislauta.models.Post;
 
 public class Main {
     public static void main(String[] args) {
-        port(80);
+        port(1234);
 
         Gson gson = new Gson();
 
@@ -30,10 +27,10 @@ public class Main {
 
         get("/api/test", (req, res) -> {
             Board b = new Board(1, "Koulu", "Kumpula", "uliopisto");
-            b.addPost(new Post(1,1,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia");
+            b.addPost(new Post(1,1,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
 
 
-            b.addPost(new Post(2,2,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia");
+            b.addPost(new Post(2,2,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
 
             return gson.toJson(b);
 

@@ -1,4 +1,4 @@
-package fi.tekislauta.templates;
+package fi.tekislauta.models;
 
 import java.util.*;
 

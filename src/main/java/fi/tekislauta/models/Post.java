@@ -1,4 +1,4 @@
-package fi.tekislauta.templates;
+package fi.tekislauta.models;
 
 import java.security.Timestamp;
 
@@ -7,7 +7,7 @@ public class Post {
     private int id;
     private int topic_id;
     private int ip;
-    private Timestamp post_time;
+    private int post_time;
     private String subject;
     private String message;
 
@@ -44,11 +44,11 @@ public class Post {
         this.ip = ip;
     }
 
-    public Timestamp getPost_time() {
+    public int getPost_time() {
         return post_time;
     }
 
-    public void setPost_time(Timestamp post_time) {
+    public void setPost_time(Integer post_time) {
         this.post_time = post_time;
     }
 
