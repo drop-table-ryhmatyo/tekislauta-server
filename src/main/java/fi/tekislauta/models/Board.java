@@ -8,20 +8,20 @@ public class Board {
     private String name;
     private String abbreviation;
     private String description;
-    private List<Post> posts;
+    private List<Post> threads;
 
     public Board(int id, String name, String abbreviation, String description) {
         this.id = id;
         this.name = name;
         this.abbreviation = abbreviation;
         this.description = description;
-        this.posts = new ArrayList<>();
+        this.threads = new ArrayList<>();
 
     }
 
     public void addPost(Post post) {
 
-        this.posts.add(post);
+        this.threads.add(post);
     }
 
 

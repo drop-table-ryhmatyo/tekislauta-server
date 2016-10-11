@@ -5,13 +5,13 @@ import java.security.Timestamp;
 public class Post {
 
     private int id;
-    private int topic_id;
+    private Integer topic_id;
     private int ip;
     private int post_time;
     private String subject;
     private String message;
 
-    public Post(int id, int topic_id, int ip, int post_time, String subject, String message) {
+    public Post(int id, Integer topic_id, int ip, int post_time, String subject, String message) {
         this.id = id;
         this.topic_id = topic_id;
         this.ip = ip;
