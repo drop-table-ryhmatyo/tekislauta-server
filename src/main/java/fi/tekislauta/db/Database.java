@@ -1,5 +1,7 @@
 package fi.tekislauta.db;
 
+import fi.tekislauta.models.Resolvable;
+
 import java.io.*;
 import java.sql.*;
 
@@ -55,19 +57,13 @@ public class Database {
         return res;
      }
 
-     // TODO: better pls
-     public String executeQuery(String sql) {
-         String res = "";
-         try {
-             ResultSet set = this._dbStmt.executeQuery(sql);
-             // Loop all the results
-             while(set.next()) {
-                res += set.getString(3);
-             }
-         } catch (SQLException e) {
-             System.out.println(e.getMessage());
-         }
+     public Connection getConnection() {
+         return this._dbConn;
+     }
 
-         return res;
+     public Object resolve(Resolvable resolvable, String id) throws SQLException {
+         return resolvable.resolve(this, id);
      }
 }
+
+

@@ -1,8 +1,10 @@
 package fi.tekislauta.models;
 
+import fi.tekislauta.db.Database;
+
 import java.security.Timestamp;
 
-public class Post {
+public class Post implements Resolvable{
 
     private int id;
     private Integer topic_id;
@@ -66,5 +68,11 @@ public class Post {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public Object resolve(Database db, String id) {
+
+        return null;
     }
 }

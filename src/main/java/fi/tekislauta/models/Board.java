@@ -1,8 +1,14 @@
 package fi.tekislauta.models;
 
+import fi.tekislauta.db.Database;
+
+import javax.xml.transform.Result;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
-public class Board {
+public class Board implements Resolvable{
 
     private int id;
     private String name;
@@ -16,6 +22,10 @@ public class Board {
         this.abbreviation = abbreviation;
         this.description = description;
         this.threads = new ArrayList<>();
+
+    }
+
+    public Board() {
 
     }
 
@@ -55,5 +65,22 @@ public class Board {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public Object resolve(Database db, String abbreviation) throws SQLException {
+
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE name= ?");
+        statement.setString(1, abbreviation);
+
+        ResultSet rs = statement.executeQuery();
+
+            this.id = rs.getInt(1);
+            this.name = rs.getString(2);
+            this.abbreviation = abbreviation;
+            this.description = rs.getString(4);
+
+        return this;
+
     }
 }
