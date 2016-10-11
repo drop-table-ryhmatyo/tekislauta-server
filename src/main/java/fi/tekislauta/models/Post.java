@@ -1,7 +1,5 @@
 package fi.tekislauta.models;
 
-import java.security.Timestamp;
-
 public class Post {
 
     private int id;

@@ -27,11 +27,11 @@ public class Main {
 
         get("/api/test", (req, res) -> {
             res.header("Content-Type","application/json");
-            Board b = new Board(1, "Koulu", "Kumpula", "uliopisto");
-            b.addPost(new Post(1,1,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
+            Board b = new Board(0, "Koulu", "k", "uliopisto");
+            b.addThread(new Post(0, null, 12345, 123, "Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
 
 
-            b.addPost(new Post(2,2,12345,123,"Joonan kissa", "Joonan kissat ovat ruotsalaisia"));
+            b.addThread(new Post(1, null, 12345, 123, "Joonan kissa 2", "Joonan kissat ovat eestiläisiä"));
 
             return gson.toJson(b);
 

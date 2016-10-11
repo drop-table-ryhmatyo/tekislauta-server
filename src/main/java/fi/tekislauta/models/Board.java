@@ -16,14 +16,12 @@ public class Board {
         this.abbreviation = abbreviation;
         this.description = description;
         this.threads = new ArrayList<>();
-
     }
 
-    public void addPost(Post post) {
+    public void addThread(Post post) {
 
         this.threads.add(post);
     }
-
 
     public int getId() {
         return id;
