@@ -10,6 +10,7 @@ import fi.tekislauta.webserver.Webserver;
 public class Main {
     public static void main(String[] args) {
 
-        new Webserver();
+        Webserver server = new Webserver(1234);
+        server.listen();
     }
 }
