@@ -27,7 +27,7 @@ public class Webserver {
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/:abbreviation", (req, res) -> {
-            res.header("Content-Type","application/json");
+            res.header("Content-Type","application/json; charset=utf-8");
             Board b = new Board();
             db.resolve(b, req.params("abbreviation"));
             return gson.toJson(b);
