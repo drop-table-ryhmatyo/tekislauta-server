@@ -1,6 +1,6 @@
 package fi.tekislauta.db;
 
-import fi.tekislauta.models.Resolvable;
+import fi.tekislauta.models.DatabaseObject;
 
 import java.io.*;
 import java.sql.*;
@@ -59,10 +59,6 @@ public class Database {
 
      public Connection getConnection() {
          return this._dbConn;
-     }
-
-     public Object resolve(Resolvable resolvable, String id) throws SQLException {
-         return resolvable.resolve(this, id);
      }
 }
 

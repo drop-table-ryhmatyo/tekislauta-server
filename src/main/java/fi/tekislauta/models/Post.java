@@ -2,9 +2,11 @@ package fi.tekislauta.models;
 
 import fi.tekislauta.db.Database;
 
-import java.security.Timestamp;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class Post implements Resolvable{
+public class Post extends Result {
 
     private int id;
     private Integer topic_id;
@@ -14,12 +16,17 @@ public class Post implements Resolvable{
     private String message;
 
     public Post(int id, Integer topic_id, int ip, int post_time, String subject, String message) {
+        super(null);
         this.id = id;
         this.topic_id = topic_id;
         this.ip = ip;
         this.post_time = post_time;
         this.subject = subject;
         this.message = message;
+    }
+
+    public Post() {
+        super(null);
     }
 
     public int getId() {
@@ -68,11 +75,5 @@ public class Post implements Resolvable{
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    @Override
-    public Object resolve(Database db, String id) {
-
-        return null;
     }
 }
