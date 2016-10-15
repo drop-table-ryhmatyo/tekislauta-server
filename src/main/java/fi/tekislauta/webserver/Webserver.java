@@ -17,11 +17,13 @@ public class Webserver {
     private final int port;
     private final Gson gson;
     private final Database db;
+    private final BoardDao boardDao;
 
     public Webserver(int port) {
         this.port = port;
         this.gson = new Gson();
         this.db = new Database();
+        this.boardDao = new BoardDao();
     }
 
     public void listen() {
@@ -30,12 +32,12 @@ public class Webserver {
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
             res.header("Content-Type","application/json; charset=utf-8");
-            return gson.toJson(new BoardDao().fetchAll(db));
+            return gson.toJson(boardDao.fetchAll(db));
         });
 
         get("/api/boards/:abbreviation", (req, res) -> {
             res.header("Content-Type","application/json; charset=utf-8");
-            return gson.toJson(new BoardDao().fetch(db, req.params("abbreviation")));
+            return gson.toJson(boardDao.fetch(db, req.params("abbreviation")));
         });
 
         get("/api/boards/posts/:abbreviation", (req, res) -> {
@@ -50,7 +52,7 @@ public class Webserver {
             b.setName((String)json.get("name"));
             b.setAbbreviation((String)json.get("abbreviation"));
             b.setDescription((String)json.get("description"));
-            return gson.toJson(new BoardDao().post(db, b));
+            return gson.toJson(boardDao.post(db, b));
         });
     }
 }

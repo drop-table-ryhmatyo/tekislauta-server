@@ -28,7 +28,7 @@ public class BoardDao implements DatabaseObject {
         Board b = new Board();
         if (!rs.next()) {
             b.setError("Cannot find board " + abbreviation + " :(");
-            return null;
+            return b;
         }
 
         b.setId(rs.getInt(1));
