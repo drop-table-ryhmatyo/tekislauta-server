@@ -44,7 +44,7 @@ public class PostDao implements DatabaseObject{
             Post p = new Post();
 
             p.setId(rs.getInt("id"));
-            p.setTopic_id(rs.getInt("topic_id"));
+            p.setTopic_id((Integer)rs.getObject("topic_id") );
             p.setIp(rs.getInt("ip"));
             p.setPost_time(rs.getInt("post_time"));
             p.setSubject(rs.getString("subject"));
