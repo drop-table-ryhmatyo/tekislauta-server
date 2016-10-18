@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DatabaseObject {
     Object fetch(Database db, String filter) throws SQLException;
-    List<Object> fetchAll(Database db) throws SQLException;
+    List<Object> fetchAll(Database db, String filter) throws SQLException;
     Object post(Database db, Object o) throws SQLException;
     void delete(Database db, String filter) throws SQLException;
 }
