@@ -63,8 +63,11 @@ public class Webserver {
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
             p.setBoard_id(Integer.parseInt(req.params("board")));
-            p.setTopic_id((Integer)json.get("topic_id"));
-            p.setIp(req.ip().hashCode());
+            if (json.get("topic_id") != null)
+                p.setTopic_id(Integer.parseInt(json.get("topic_id").toString().split(".")[0]));
+            else
+                p.setTopic_id(null);
+            p.setIp(req.ip());
             p.setSubject((String)json.get("subject"));
             p.setMessage((String)json.get("message"));
 

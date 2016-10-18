@@ -11,12 +11,12 @@ public class Post extends Result {
     private Integer id;
     private Integer board_id;
     private Integer topic_id;
-    private Integer ip;
+    private String ip;
     private Integer post_time;
     private String subject;
     private String message;
 
-    public Post(int id, Integer board_id, Integer topic_id, int ip, int post_time, String subject, String message) {
+    public Post(int id, Integer board_id, Integer topic_id, String ip, int post_time, String subject, String message) {
         super(null);
         this.id = id;
         this.board_id = board_id;
@@ -51,7 +51,7 @@ public class Post extends Result {
         this.id = id;
     }
 
-    public int getTopic_id() {
+    public Integer getTopic_id() {
         return topic_id;
     }
 
@@ -67,11 +67,11 @@ public class Post extends Result {
         this.topic_id = topic_id;
     }
 
-    public int getIp() {
+    public String getIp() {
         return ip;
     }
 
-    public void setIp(int ip) {
+    public void setIp(String ip) {
         this.ip = ip;
     }
 

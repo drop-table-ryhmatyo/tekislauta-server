@@ -19,7 +19,7 @@ CREATE TABLE Post
     board_id integer NOT NULL,
     topic_id integer NULL, -- a post is a thread starter if topic_id is NULL
     
-    ip blob NOT NULL,
+    ip varchar(16) NOT NULL,
     post_time integer(4) NOT NULL DEFAULT (strftime('%s', 'now')), -- unix time
     subject varchar(128) NULL,
     message text NOT NULL, -- either an image or a message...at this point we only support messages only ~ 26-09-2016 cxcorp

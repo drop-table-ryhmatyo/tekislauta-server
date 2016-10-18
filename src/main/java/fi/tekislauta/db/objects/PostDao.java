@@ -4,10 +4,7 @@ import fi.tekislauta.db.Database;
 import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Post;
 
-import java.sql.Blob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.*;
 
@@ -46,7 +43,7 @@ public class PostDao implements DatabaseObject{
             Post p = new Post();
             p.setId(rs.getInt("id"));
             p.setTopic_id((Integer)rs.getObject("topic_id") );
-            p.setIp(rs.getInt("ip"));
+            p.setIp(rs.getString("ip"));
             p.setPost_time(rs.getInt("post_time"));
             p.setSubject(rs.getString("subject"));
             p.setMessage(rs.getString("message"));
@@ -69,7 +66,7 @@ public class PostDao implements DatabaseObject{
 
             p.setId(rs.getInt("id"));
             p.setTopic_id((Integer)rs.getObject("topic_id") );
-            p.setIp(rs.getInt("ip"));
+            p.setIp(rs.getString("ip"));
             p.setPost_time(rs.getInt("post_time"));
             p.setSubject(rs.getString("subject"));
             p.setMessage(rs.getString("message"));
@@ -83,15 +80,14 @@ public class PostDao implements DatabaseObject{
     @Override
     public Object post(Database db, Object o) throws SQLException {
 
-        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_id, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?");
+        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_id, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
         Post p = (Post)o;
-
-        Blob b = db.getConnection().createBlob();
-        b.setBytes(1, ("" + p.getIp()).getBytes());
-
         statement.setInt(1, p.getBoard_id());
-        statement.setInt(2, p.getTopic_id());
-        statement.setBlob(3, b);
+        if (p.getTopic_id() == null)
+            statement.setNull(2, Types.INTEGER);
+        else
+            statement.setInt(2, p.getTopic_id());
+        statement.setString(3, p.getIp());
         statement.setString(4, p.getSubject());
         statement.setString(5, p.getMessage());
 

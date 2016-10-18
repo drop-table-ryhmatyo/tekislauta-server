@@ -16,7 +16,7 @@ CREATE TABLE Post
     board_id integer NOT NULL,
     topic_id integer NULL,
 
-    ip blob NOT NULL,
+    ip varchar(16) NOT NULL,
     post_time integer(4) NOT NULL DEFAULT (strftime('%s', 'now')),
     subject varchar(128) NULL,
     message text NOT NULL,
