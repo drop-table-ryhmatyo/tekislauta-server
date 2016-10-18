@@ -8,10 +8,10 @@ import java.sql.SQLException;
 
 public class Post extends Result {
 
-    private int id;
+    private Integer id;
     private Integer topic_id;
-    private int ip;
-    private int post_time;
+    private Integer ip;
+    private Integer post_time;
     private String subject;
     private String message;
 
@@ -23,6 +23,17 @@ public class Post extends Result {
         this.post_time = post_time;
         this.subject = subject;
         this.message = message;
+    }
+
+    // Nullify all members for a clean JSON object
+    public void setError(String e) {
+        this.id = null;
+        this.message = null;
+        this.ip = null;
+        this.subject = null;
+        this.topic_id = null;
+        this.post_time = null;
+        super.setError(e);
     }
 
     public Post() {
@@ -41,7 +52,7 @@ public class Post extends Result {
         return topic_id;
     }
 
-    public void setTopic_id(int topic_id) {
+    public void setTopic_id(Integer topic_id) {
         this.topic_id = topic_id;
     }
 

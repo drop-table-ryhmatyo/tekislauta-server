@@ -19,7 +19,7 @@ public class PostDao implements DatabaseObject{
 
     @Override
     public Object fetch(Database db, String filter) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board b, Post p WHERE b.id = p.board_ip AND p.id= ?");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE  p.id= ?");
         statement.setString(1, filter);
 
         ResultSet rs = statement.executeQuery();
@@ -34,8 +34,31 @@ public class PostDao implements DatabaseObject{
     }
 
     @Override
-    public List<Object> fetchAll(Database db) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board b, Post p WHERE b.id = p.board_ip");
+    public List<Object> fetchAll(Database db, String board) throws SQLException {
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_id = ?");
+        statement.setInt(1,Integer.parseInt(board));
+        ResultSet rs = statement.executeQuery();
+
+        ArrayList<Post> postList = new ArrayList<>();
+
+        while(rs.next()) {
+            Post p = new Post();
+            p.setId(rs.getInt("id"));
+            p.setTopic_id((Integer)rs.getObject("topic_id") );
+            p.setIp(rs.getInt("ip"));
+            p.setPost_time(rs.getInt("post_time"));
+            p.setSubject(rs.getString("subject"));
+            p.setMessage(rs.getString("message"));
+            postList.add(p);
+        }
+
+        return (List)postList;
+    }
+
+    public List<Post> fetchByTopic(Database db, String board, String topic) throws SQLException {
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_id = ? AND p.topic_id = ?");
+        statement.setInt(1, Integer.parseInt(board));
+        statement.setInt(2, Integer.parseInt(topic));
         ResultSet rs = statement.executeQuery();
 
         ArrayList<Post> postList = new ArrayList<>();
@@ -64,9 +87,7 @@ public class PostDao implements DatabaseObject{
     @Override
     public void delete(Database db, String params) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
-        statement.setObject(1, params);
-        ResultSet rs = statement.executeQuery();
-
-
+        statement.setInt(1, Integer.parseInt(params));
+        statement.executeUpdate();
     }
 }

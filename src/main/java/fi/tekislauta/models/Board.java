@@ -23,7 +23,7 @@ public class Board extends Result {
         this.description = description;
     }
 
-    // Nullify all member for a clean JSON object
+    // Nullify all members for a clean JSON object
     public void setError(String e) {
         this.id = null;
         this.name = null;
