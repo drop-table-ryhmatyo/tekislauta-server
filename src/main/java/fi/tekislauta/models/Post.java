@@ -9,15 +9,17 @@ import java.sql.SQLException;
 public class Post extends Result {
 
     private Integer id;
+    private Integer board_id;
     private Integer topic_id;
     private Integer ip;
     private Integer post_time;
     private String subject;
     private String message;
 
-    public Post(int id, Integer topic_id, int ip, int post_time, String subject, String message) {
+    public Post(int id, Integer board_id, Integer topic_id, int ip, int post_time, String subject, String message) {
         super(null);
         this.id = id;
+        this.board_id = board_id;
         this.topic_id = topic_id;
         this.ip = ip;
         this.post_time = post_time;
@@ -28,6 +30,7 @@ public class Post extends Result {
     // Nullify all members for a clean JSON object
     public void setError(String e) {
         this.id = null;
+        this.board_id = null;
         this.message = null;
         this.ip = null;
         this.subject = null;
@@ -50,6 +53,14 @@ public class Post extends Result {
 
     public int getTopic_id() {
         return topic_id;
+    }
+
+    public Integer getBoard_id() {
+        return board_id;
+    }
+
+    public void setBoard_id(Integer board_id) {
+        this.board_id = board_id;
     }
 
     public void setTopic_id(Integer topic_id) {

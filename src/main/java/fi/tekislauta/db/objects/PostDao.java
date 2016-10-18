@@ -4,6 +4,7 @@ import fi.tekislauta.db.Database;
 import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Post;
 
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,7 +82,27 @@ public class PostDao implements DatabaseObject{
 
     @Override
     public Object post(Database db, Object o) throws SQLException {
-        return null;
+
+        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_id, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?");
+        Post p = (Post)o;
+
+        Blob b = db.getConnection().createBlob();
+        b.setBytes(1, ("" + p.getIp()).getBytes());
+
+        statement.setInt(1, p.getBoard_id());
+        statement.setInt(2, p.getTopic_id());
+        statement.setBlob(3, b);
+        statement.setString(4, p.getSubject());
+        statement.setString(5, p.getMessage());
+
+        int rs = statement.executeUpdate();
+
+        if (rs == statement.EXECUTE_FAILED) {
+            p.setError("Something went wrong");
+            return p;
+        }
+
+        return p;
     }
 
     @Override
