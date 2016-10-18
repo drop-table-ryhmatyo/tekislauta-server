@@ -7,6 +7,7 @@ import fi.tekislauta.db.objects.PostDao;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Post;
 import fi.tekislauta.models.DatabaseObject;
+import fi.tekislauta.models.Result;
 
 import static spark.Spark.*;
 
@@ -39,14 +40,9 @@ public class Webserver {
             return gson.toJson(boardDao.fetchAll(db, ""));
         });
 
-        get("/api/boards/:abbreviation", (req, res) -> {
+        get("/api/boards/:id", (req, res) -> {
             res.header("Content-Type","application/json; charset=utf-8");
-            return gson.toJson(boardDao.fetch(db, req.params("abbreviation")));
-        });
-
-        get("/api/boards/posts/:abbreviation", (req, res) -> {
-            res.header("Content-Type","application/json; charset=utf-8");
-            return "";
+            return gson.toJson(boardDao.fetch(db, req.params("id")));
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
@@ -58,13 +54,23 @@ public class Webserver {
             return "\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40 good shit go౦ԁ sHit\uD83D\uDC4C thats ✔ some good\uD83D\uDC4C\uD83D\uDC4Cshit right\uD83D\uDC4C\uD83D\uDC4Cthere\uD83D\uDC4C\uD83D\uDC4C\uD83D\uDC4C right✔there ✔✔if i do ƽaү so my self \uD83D\uDCAF i say so \uD83D\uDCAF thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ\uD83D\uDCAF \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4CНO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ\uD83D\uDC4C \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4C \uD83D\uDCAF \uD83D\uDC4C \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC4C\uD83D\uDC4CGood shit";
         });
 
+        get("/api/boards/:board/posts/:topic", (req, res) -> {
+            res.header("Content-Type","application/json; charset=utf-8");
+            return gson.toJson(postDao.fetchByTopic(db, req.params("board"), req.params("topic")));
+        });
+
+        get("/api/posts/:id", (req, res) -> {
+            res.header("Content-Type","application/json; charset=utf-8");
+            return gson.toJson(postDao.fetch(db, req.params("id")));
+        });
+
         post("api/boards/:board/posts/",  (req,res) -> {
             res.header("Content-Type", "application/json; charset=utf-8");
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
             p.setBoard_id(Integer.parseInt(req.params("board")));
             if (json.get("topic_id") != null)
-                p.setTopic_id(Integer.parseInt(json.get("topic_id").toString().split(".")[0]));
+                p.setTopic_id(Integer.parseInt(json.get("topic_id").toString().split("\\.")[0]));
             else
                 p.setTopic_id(null);
             p.setIp(req.ip());
@@ -82,6 +88,16 @@ public class Webserver {
             b.setAbbreviation((String)json.get("abbreviation"));
             b.setDescription((String)json.get("description"));
             return gson.toJson(boardDao.post(db, b));
+        });
+
+        delete("api/posts/:id", (req, res) -> {
+            res.header("Content-Type","application/json; charset=utf-8");
+            return gson.toJson(postDao.delete(db, req.params("id")));
+        });
+
+        delete("api/boards/:id", (req, res) -> {
+            res.header("Content-Type","application/json; charset=utf-8");
+            return gson.toJson(boardDao.delete(db, req.params("id")));
         });
     }
 }

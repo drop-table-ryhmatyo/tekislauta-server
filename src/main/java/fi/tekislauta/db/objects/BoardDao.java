@@ -77,8 +77,13 @@ public class BoardDao implements DatabaseObject {
     }
 
     @Override
-    public void delete(Database db, String filter) throws SQLException {
+    public Object delete(Database db, String filter) throws SQLException {
+        PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Board WHERE id = ?");
+        statement.setInt(1, Integer.parseInt(filter));
+        int e = statement.executeUpdate();
 
+        if (e == Statement.EXECUTE_FAILED) return new Result("Error");
+        return new Result("Success");
     }
 
 }

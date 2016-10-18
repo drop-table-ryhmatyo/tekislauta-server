@@ -3,6 +3,7 @@ package fi.tekislauta.db.objects;
 import fi.tekislauta.db.Database;
 import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Post;
+import fi.tekislauta.models.Result;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -102,9 +103,12 @@ public class PostDao implements DatabaseObject{
     }
 
     @Override
-    public void delete(Database db, String params) throws SQLException {
+    public Object delete(Database db, String params) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
         statement.setInt(1, Integer.parseInt(params));
-        statement.executeUpdate();
+        int e = statement.executeUpdate();
+
+        if (e == Statement.EXECUTE_FAILED) return new Result("Error");
+        return new Result("Success");
     }
 }
