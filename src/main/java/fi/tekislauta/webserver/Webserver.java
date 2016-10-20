@@ -87,6 +87,20 @@ public class Webserver {
             return gson.toJson(postDao.post(db, p));
         });
 
+        post("api/boards/:board/posts/:topic",  (req,res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+            Map json = gson.fromJson(req.body(), Map.class);
+            Post p = new Post();
+            p.setBoard_id(Integer.parseInt(req.params("board")));
+            p.setTopic_id(Integer.parseInt(req.params("topic")));
+            p.setIp(req.ip());
+            p.setSubject((String)json.get("subject"));
+            p.setMessage((String)json.get("message"));
+
+            return gson.toJson(postDao.post(db, p));
+        });
+
         post("/api/boards/", (req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type","application/json; charset=utf-8");

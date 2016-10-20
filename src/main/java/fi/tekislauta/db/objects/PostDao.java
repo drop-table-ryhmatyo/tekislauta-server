@@ -55,7 +55,7 @@ public class PostDao implements DatabaseObject{
     }
 
     public List<Post> fetchByTopic(Database db, String board, String topic) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_id = ? AND p.topic_id = ? OR p.id = ?");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_id = ? AND (p.topic_id = ? OR p.id = ?)");
         statement.setInt(1, Integer.parseInt(board));
         statement.setInt(2, Integer.parseInt(topic));
         statement.setInt(3, Integer.parseInt(topic));
