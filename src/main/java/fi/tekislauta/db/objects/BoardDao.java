@@ -16,34 +16,15 @@ public class BoardDao implements DatabaseObject {
 
     public BoardDao() {}
 
-    public Object fetchByAbbreviation(Database db, String abbreviation) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation = ?");
+    @Override
+    public Object fetch(Database db, String abbreviation) throws SQLException {
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
         statement.setString(1, abbreviation);
 
         ResultSet rs = statement.executeQuery();
         Board b = new Board();
         if (!rs.next()) {
             b.setError("Cannot find board with abbreviation " + abbreviation + " :(");
-            return b;
-        }
-
-        b.setId(rs.getInt(1));
-        b.setName(rs.getString(2));
-        b.setAbbreviation(rs.getString("abbreviation"));
-        b.setDescription(rs.getString(4));
-
-        return b;
-    }
-
-    @Override
-    public Object fetch(Database db, String id) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE id= ?");
-        statement.setInt(1, Integer.parseInt(id));
-
-        ResultSet rs = statement.executeQuery();
-        Board b = new Board();
-        if (!rs.next()) {
-            b.setError("Cannot find board with id " + id + " :(");
             return b;
         }
 
@@ -108,14 +89,13 @@ public class BoardDao implements DatabaseObject {
         PreparedStatement deletePosts;
 
         try {
-            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE id = ?");
-            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_id = ?");
+            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
+            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
 
-            Integer boardId = Integer.parseInt(filter);
-            deleteBoard.setInt(1, boardId);
+            deleteBoard.setString(1, filter);
             int boardDeletionSuccess = deleteBoard.executeUpdate();
 
-            deletePosts.setInt(1, boardId);
+            deletePosts.setString(1, filter);
             int postsDeletionSuccess = deletePosts.executeUpdate();
 
             if (boardDeletionSuccess == Statement.EXECUTE_FAILED

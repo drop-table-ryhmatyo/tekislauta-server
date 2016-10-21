@@ -41,8 +41,8 @@ public class PostDao implements DatabaseObject{
 
     @Override
     public List<Object> fetchAll(Database db, String board) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_id = ? AND topic_id  IS NULL");
-        statement.setInt(1,Integer.parseInt(board));
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id  IS NULL");
+        statement.setString(1,board);
         ResultSet rs = statement.executeQuery();
 
         ArrayList<Post> postList = new ArrayList<>();
@@ -62,8 +62,8 @@ public class PostDao implements DatabaseObject{
     }
 
     public List<Post> fetchByTopic(Database db, String board, String topic) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_id = ? AND (p.topic_id = ? OR p.id = ?)");
-        statement.setInt(1, Integer.parseInt(board));
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR p.id = ?)");
+        statement.setString(1, board);
         statement.setInt(2, Integer.parseInt(topic));
         statement.setInt(3, Integer.parseInt(topic));
         ResultSet rs = statement.executeQuery();
@@ -89,9 +89,9 @@ public class PostDao implements DatabaseObject{
     @Override
     public Object post(Database db, Object o) throws SQLException {
 
-        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_id, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
+        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
         Post p = (Post)o;
-        statement.setInt(1, p.getBoard_id());
+        statement.setString(1, p.getBoard_abbreviation());
         if (p.getTopic_id() == null)
             statement.setNull(2, Types.INTEGER);
         else

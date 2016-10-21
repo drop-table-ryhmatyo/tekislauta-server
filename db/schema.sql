@@ -13,7 +13,7 @@ CREATE TABLE Board
 CREATE TABLE Post
 (
     id integer,
-    board_id integer NOT NULL,
+    board_abbreviation varchar(4) NOT NULL,
     topic_id integer NULL,
 
     ip varchar(16) NOT NULL,
@@ -22,6 +22,6 @@ CREATE TABLE Post
     message text NOT NULL,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (board_id) REFERENCES Board(id),
+    FOREIGN KEY (board_abbreviation) REFERENCES Board(id),
     FOREIGN KEY (topic_id) REFERENCES Post(id)
 );

@@ -44,7 +44,7 @@ public class Webserver {
         get("/api/boards/:abbreviation", (req, res) -> {
             res.header("Content-Type","application/json; charset=utf-8");
             res.header("Access-Control-Allow-Origin", "*");
-            return gson.toJson(boardDao.fetchByAbbreviation(db, req.params("abbreviation")));
+            return gson.toJson(boardDao.fetch(db, req.params("abbreviation")));
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
@@ -75,7 +75,7 @@ public class Webserver {
             res.header("Content-Type", "application/json; charset=utf-8");
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
-            p.setBoard_id(Integer.parseInt(req.params("board")));
+            p.setBoard_abbrevition(req.params("board"));
             if (json.get("topic_id") != null)
                 p.setTopic_id(Integer.parseInt(json.get("topic_id").toString().split("\\.")[0]));
             else
@@ -92,7 +92,7 @@ public class Webserver {
             res.header("Content-Type", "application/json; charset=utf-8");
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
-            p.setBoard_id(Integer.parseInt(req.params("board")));
+            p.setBoard_abbrevition(req.params("board"));
             p.setTopic_id(Integer.parseInt(req.params("topic")));
             p.setIp(req.ip());
             p.setSubject((String)json.get("subject"));
