@@ -59,17 +59,23 @@ public class BoardDao implements DatabaseObject {
 
     @Override
     public Object post(Database db, Object o) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?) ");
+        PreparedStatement statement = db.getConnection().prepareStatement(
+            "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
+            Statement.RETURN_GENERATED_KEYS
+        );
         Board b = (Board)o;
         statement.setString(1, b.getName());
         statement.setString(2, b.getAbbreviation());
         statement.setString(3, b.getDescription());
-        int rs = statement.executeUpdate();
-
-        if (rs == Statement.EXECUTE_FAILED) {
+        int result = statement.executeUpdate();
+        if (result == Statement.EXECUTE_FAILED) {
             b.setError("Query execution failed. Not inserted.");
             return b;
         }
+
+        ResultSet rs = statement.getGeneratedKeys();
+        rs.next();
+        b.setId(rs.getInt(1));
         return b;
     }
 
