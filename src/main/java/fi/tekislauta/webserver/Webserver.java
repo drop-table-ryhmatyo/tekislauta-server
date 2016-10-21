@@ -44,7 +44,7 @@ public class Webserver {
         get("/api/boards/:abbreviation", (req, res) -> {
             res.header("Content-Type","application/json; charset=utf-8");
             res.header("Access-Control-Allow-Origin", "*");
-            return gson.toJson(boardDao.fetchByAbbreviation(db, req.params("id")));
+            return gson.toJson(boardDao.fetchByAbbreviation(db, req.params("abbreviation")));
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
