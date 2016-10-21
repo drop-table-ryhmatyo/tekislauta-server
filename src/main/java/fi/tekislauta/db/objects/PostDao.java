@@ -29,6 +29,13 @@ public class PostDao implements DatabaseObject{
             return p;
         }
 
+        p.setId(rs.getInt("id"));
+        p.setTopic_id((Integer)rs.getObject("topic_id") );
+        p.setIp(rs.getString("ip"));
+        p.setPost_time(rs.getInt("post_time"));
+        p.setSubject(rs.getString("subject"));
+        p.setMessage(rs.getString("message"));
+
         return p;
     }
 
