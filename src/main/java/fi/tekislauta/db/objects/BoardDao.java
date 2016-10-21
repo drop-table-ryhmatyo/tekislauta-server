@@ -16,6 +16,25 @@ public class BoardDao implements DatabaseObject {
 
     public BoardDao() {}
 
+    public Object fetchByAbbreviation(Database db, String abbreviation) throws SQLException {
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation = ?");
+        statement.setString(1, abbreviation);
+
+        ResultSet rs = statement.executeQuery();
+        Board b = new Board();
+        if (!rs.next()) {
+            b.setError("Cannot find board with abbreviation " + abbreviation + " :(");
+            return b;
+        }
+
+        b.setId(rs.getInt(1));
+        b.setName(rs.getString(2));
+        b.setAbbreviation(rs.getString("abbreviation"));
+        b.setDescription(rs.getString(4));
+
+        return b;
+    }
+
     @Override
     public Object fetch(Database db, String id) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE id= ?");
