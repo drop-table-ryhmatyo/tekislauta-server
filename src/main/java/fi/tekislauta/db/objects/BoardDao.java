@@ -5,10 +5,7 @@ import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Result;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -78,12 +75,40 @@ public class BoardDao implements DatabaseObject {
 
     @Override
     public Object delete(Database db, String filter) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Board WHERE id = ?");
-        statement.setInt(1, Integer.parseInt(filter));
-        int e = statement.executeUpdate();
 
-        if (e == Statement.EXECUTE_FAILED) return new Result("Error");
-        return new Result("Success");
+        Connection con = db.getConnection();
+        con.setAutoCommit(false);
+
+        PreparedStatement deleteBoard;
+        PreparedStatement deletePosts;
+
+        try {
+            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE id = ?");
+            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_id = ?");
+
+            Integer boardId = Integer.parseInt(filter);
+            deleteBoard.setInt(1, boardId);
+            int boardDeletionSuccess = deleteBoard.executeUpdate();
+
+            deletePosts.setInt(1, boardId);
+            int postsDeletionSuccess = deletePosts.executeUpdate();
+
+            if (boardDeletionSuccess == Statement.EXECUTE_FAILED
+                || postsDeletionSuccess == Statement.EXECUTE_FAILED) {
+                return new Result("Error");
+            }
+
+            return new Result("Success");
+        } catch (SQLException ex) {
+            if (con != null) {
+                con.rollback(); // rollback failed transaction
+            }
+            throw ex;
+        } finally {
+            if (con != null) {
+                con.setAutoCommit(true);
+            }
+        }
     }
 
 }
