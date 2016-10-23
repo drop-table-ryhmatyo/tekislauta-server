@@ -2,12 +2,12 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE Board
 (
-    id integer,
+    id integer AUTO_INCREMENT,
     name varchar(64) NOT NULL,
     abbreviation varchar(4) NOT NULL,
     description varchar(1024) NULL,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (abbreviation)
 );
 
 CREATE TABLE Post
@@ -22,6 +22,6 @@ CREATE TABLE Post
     message text NOT NULL,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (board_abbreviation) REFERENCES Board(id),
+    FOREIGN KEY (board_abbreviation) REFERENCES Board(abbreviation),
     FOREIGN KEY (topic_id) REFERENCES Post(id)
 );
