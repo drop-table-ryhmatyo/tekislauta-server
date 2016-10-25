@@ -1,10 +1,8 @@
 package fi.tekislauta.models;
 
-import fi.tekislauta.db.Database;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.security.NoSuchAlgorithmException;
+import java.util.zip.CRC32;
+import java.security.MessageDigest;
 
 public class Post extends Result {
 
@@ -72,7 +70,15 @@ public class Post extends Result {
     }
 
     public void setIp(String ip) {
-        this.ip = ip;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(ip.getBytes());
+            CRC32 crc32 = new CRC32();
+            crc32.update(md.digest());
+            this.ip = Long.toHexString(crc32.getValue()).toUpperCase();
+        } catch (Exception e) {
+            this.ip = "";
+        }
     }
 
     public int getPost_time() {

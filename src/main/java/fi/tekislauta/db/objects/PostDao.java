@@ -41,7 +41,7 @@ public class PostDao implements DatabaseObject{
 
     @Override
     public List<Object> fetchAll(Database db, String board) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id  IS NULL");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL");
         statement.setString(1,board);
         ResultSet rs = statement.executeQuery();
 
