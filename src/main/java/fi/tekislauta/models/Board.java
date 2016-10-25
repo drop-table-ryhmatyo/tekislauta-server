@@ -10,14 +10,12 @@ import java.util.*;
 
 public class Board extends Result {
 
-    private Integer id;
     private String name;
     private String abbreviation;
     private String description;
 
     public Board(int id, String name, String abbreviation, String description) {
         super(null);
-        this.id = id;
         this.name = name;
         this.abbreviation = abbreviation;
         this.description = description;
@@ -25,7 +23,6 @@ public class Board extends Result {
 
     // Nullify all members for a clean JSON object
     public void setError(String e) {
-        this.id = null;
         this.name = null;
         this.abbreviation = null;
         this.description = null;
@@ -34,14 +31,6 @@ public class Board extends Result {
 
     public Board() {
         super(null);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

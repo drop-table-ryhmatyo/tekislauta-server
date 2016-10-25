@@ -28,7 +28,6 @@ public class BoardDao implements DatabaseObject {
             return b;
         }
 
-        b.setId(rs.getInt(1));
         b.setName(rs.getString(2));
         b.setAbbreviation(rs.getString("abbreviation"));
         b.setDescription(rs.getString(4));
@@ -47,7 +46,6 @@ public class BoardDao implements DatabaseObject {
         while (rs.next()) {
             Board b = new Board();
 
-            b.setId(rs.getInt("id"));
             b.setName(rs.getString("name"));
             b.setAbbreviation(rs.getString("abbreviation"));
             b.setDescription(rs.getString("description"));
@@ -72,10 +70,7 @@ public class BoardDao implements DatabaseObject {
             b.setError("Query execution failed. Not inserted.");
             return b;
         }
-
-        ResultSet rs = statement.getGeneratedKeys();
-        rs.next();
-        b.setId(rs.getInt(1));
+        
         return b;
     }
 

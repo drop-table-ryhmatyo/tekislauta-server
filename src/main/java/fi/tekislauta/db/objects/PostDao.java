@@ -89,25 +89,32 @@ public class PostDao implements DatabaseObject{
     @Override
     public Object post(Database db, Object o) throws SQLException {
 
-        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
-        Post p = (Post)o;
-        statement.setString(1, p.getBoard_abbreviation());
-        if (p.getTopic_id() == null)
-            statement.setNull(2, Types.INTEGER);
-        else
-            statement.setInt(2, p.getTopic_id());
-        statement.setString(3, p.getIp());
-        statement.setString(4, p.getSubject());
-        statement.setString(5, p.getMessage());
+        try {
+            PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
+            Post p = (Post) o;
+            statement.setString(1, p.getBoard_abbreviation());
+            if (p.getTopic_id() == null)
+                statement.setNull(2, Types.INTEGER);
+            else
+                statement.setInt(2, p.getTopic_id());
+            statement.setString(3, p.getIp());
+            statement.setString(4, p.getSubject());
+            statement.setString(5, p.getMessage());
 
-        int rs = statement.executeUpdate();
 
-        if (rs == statement.EXECUTE_FAILED) {
-            p.setError("Something went wrong");
+            int rs = statement.executeUpdate();
+
+            if (rs == statement.EXECUTE_FAILED) {
+                p.setError("Something went wrong");
+                return p;
+            }
+
             return p;
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
         }
 
-        return p;
+        return null;
     }
 
     @Override

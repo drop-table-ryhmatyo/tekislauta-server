@@ -2,7 +2,6 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE Board
 (
-    id integer AUTO_INCREMENT,
     name varchar(64) NOT NULL,
     abbreviation varchar(4) NOT NULL,
     description varchar(1024) NULL,
