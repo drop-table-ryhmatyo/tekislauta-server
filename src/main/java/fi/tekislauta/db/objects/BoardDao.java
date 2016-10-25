@@ -14,86 +14,59 @@ import java.util.ArrayList;
  */
 public class BoardDao implements DatabaseObject {
 
-    public BoardDao() {}
+    public BoardDao() {
+    }
 
     @Override
     public Object fetch(Database db, String abbreviation) throws SQLException {
-        Result r = new Result();
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
-            statement.setString(1, abbreviation);
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
+        statement.setString(1, abbreviation);
 
-            ResultSet rs = statement.executeQuery();
-            Board b = new Board();
-            if (!rs.next()) {
-                r.setStatus("Cannot find board with abbreviation " + abbreviation + " :(");
-                return r;
-            }
+        ResultSet rs = statement.executeQuery();
+        Board b = new Board();
 
-            b.setName(rs.getString("name"));
-            b.setAbbreviation(rs.getString("abbreviation"));
-            b.setDescription(rs.getString("description"));
+        b.setName(rs.getString("name"));
+        b.setAbbreviation(rs.getString("abbreviation"));
+        b.setDescription(rs.getString("description"));
 
-            r.setData(b);
 
-            return r;
-        } catch (Exception e) {
-            r.setStatus("Server error");
-            return r;
-        }
+        return b;
     }
 
     @Override
     public Object fetchAll(Database db, String filter) throws SQLException {
-        Result r = new Result();
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
 
-            ResultSet rs = statement.executeQuery();
+        ResultSet rs = statement.executeQuery();
 
-            ArrayList<Board> res = new ArrayList();
+        ArrayList<Board> res = new ArrayList();
 
-            while (rs.next()) {
-                Board b = new Board();
+        while (rs.next()) {
+            Board b = new Board();
 
-                b.setName(rs.getString("name"));
-                b.setAbbreviation(rs.getString("abbreviation"));
-                b.setDescription(rs.getString("description"));
-                res.add(b);
-            }
-
-            r.setData((List) res);
-
-            return r;
-        } catch (Exception e) {
-            r.setStatus("Server error");
-            return r;
+            b.setName(rs.getString("name"));
+            b.setAbbreviation(rs.getString("abbreviation"));
+            b.setDescription(rs.getString("description"));
+            res.add(b);
         }
+
+
+        return res;
     }
 
     @Override
     public Object post(Database db, Object o) throws SQLException {
-        Result r = new Result();
-        try {
-            PreparedStatement statement = db.getConnection().prepareStatement(
-                    "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
-            Board b = (Board) o;
-            statement.setString(1, b.getName());
-            statement.setString(2, b.getAbbreviation());
-            statement.setString(3, b.getDescription());
-            int result = statement.executeUpdate();
-            if (result == Statement.EXECUTE_FAILED) {
-                r.setStatus("Query execution failed. Not inserted.");
-                return r;
-            }
-            r.setData(b);
-            return r;
-        } catch (Exception e) {
-            r.setStatus("Server error");
-            return r;
-        }
+
+        PreparedStatement statement = db.getConnection().prepareStatement(
+                "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
+                Statement.RETURN_GENERATED_KEYS
+        );
+        Board b = (Board) o;
+        statement.setString(1, b.getName());
+        statement.setString(2, b.getAbbreviation());
+        statement.setString(3, b.getDescription());
+
+        return b;
     }
 
     @Override
@@ -105,32 +78,16 @@ public class BoardDao implements DatabaseObject {
         PreparedStatement deleteBoard;
         PreparedStatement deletePosts;
 
-        Result r = new Result();
+        deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
+        deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
 
-        try {
-            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
-            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
+        deleteBoard.setString(1, filter);
+        int boardDeletionSuccess = deleteBoard.executeUpdate();
 
-            deleteBoard.setString(1, filter);
-            int boardDeletionSuccess = deleteBoard.executeUpdate();
+        deletePosts.setString(1, filter);
+        int postsDeletionSuccess = deletePosts.executeUpdate();
 
-            deletePosts.setString(1, filter);
-            int postsDeletionSuccess = deletePosts.executeUpdate();
-
-            if (boardDeletionSuccess == Statement.EXECUTE_FAILED
-                || postsDeletionSuccess == Statement.EXECUTE_FAILED) {
-                r.setStatus("Error");
-                return r;
-            }
-            return r;
-        } catch (SQLException ex) {
-            r.setStatus("Error");
-            return r;
-        } finally {
-            if (con != null) {
-                con.setAutoCommit(true);
-            }
-        }
+        return null;
     }
 
 }
