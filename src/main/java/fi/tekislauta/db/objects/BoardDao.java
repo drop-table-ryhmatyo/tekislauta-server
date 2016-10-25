@@ -28,9 +28,9 @@ public class BoardDao implements DatabaseObject {
             return b;
         }
 
-        b.setName(rs.getString(2));
+        b.setName(rs.getString("name"));
         b.setAbbreviation(rs.getString("abbreviation"));
-        b.setDescription(rs.getString(4));
+        b.setDescription(rs.getString("description"));
 
         return b;
     }
@@ -70,7 +70,7 @@ public class BoardDao implements DatabaseObject {
             b.setError("Query execution failed. Not inserted.");
             return b;
         }
-        
+
         return b;
     }
 
