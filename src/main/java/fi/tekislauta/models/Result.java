@@ -4,17 +4,24 @@ package fi.tekislauta.models;
  * Created by Hugo on 14.10.2016.
  */
 public class Result {
-    private String error;
+    private String status = "Success";
+    public Object data = null;
 
-    public Result(String error) {
-        this.error = error;
+    public Result() {}
+
+    public Object getData() {
+        return data;
     }
 
-    public String getError() {
-        return error;
+    public void setData(Object o) {
+        this.data = o;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

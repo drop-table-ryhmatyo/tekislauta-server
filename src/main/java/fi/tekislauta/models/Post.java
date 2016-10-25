@@ -4,7 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 import java.security.MessageDigest;
 
-public class Post extends Result {
+public class Post {
 
     private Integer id;
     private String board_abbrevition;
@@ -15,7 +15,6 @@ public class Post extends Result {
     private String message;
 
     public Post(int id, String board_id, Integer topic_id, String ip, int post_time, String subject, String message) {
-        super(null);
         this.id = id;
         this.board_abbrevition = board_id;
         this.topic_id = topic_id;
@@ -25,21 +24,7 @@ public class Post extends Result {
         this.message = message;
     }
 
-    // Nullify all members for a clean JSON object
-    public void setError(String e) {
-        this.id = null;
-        this.board_abbrevition = null;
-        this.message = null;
-        this.ip = null;
-        this.subject = null;
-        this.topic_id = null;
-        this.post_time = null;
-        super.setError(e);
-    }
-
-    public Post() {
-        super(null);
-    }
+    public Post() {}
 
     public int getId() {
         return id;
