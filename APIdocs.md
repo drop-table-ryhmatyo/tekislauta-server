@@ -43,7 +43,7 @@ Post body:
     "message":"Welcome"
 }
 ```
-Creates a reply to `topic_id` which is a post it where `post_id` is null. 
+Creates a reply to `topic_id` which is a post it where `topic_id` is null. 
 calling POST to `/boards/:board_abbreviation/posts/` creates a topic, POST to `/boards/:board_abbreviation/posts/:post_id` creates a reply to a topic.
 
 `DELETE /posts/:post_id` Deletes a post.
