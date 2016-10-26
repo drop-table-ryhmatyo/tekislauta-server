@@ -95,7 +95,7 @@ public class PostDao implements DatabaseObject {
         statement.setString(4, p.getSubject());
         statement.setString(5, p.getMessage());
 
-
+        statement.executeUpdate();
         return p;
     }
 
@@ -103,6 +103,7 @@ public class PostDao implements DatabaseObject {
     public Object delete(Database db, String params) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
         statement.setInt(1, Integer.parseInt(params));
+        statement.executeUpdate();
         return null;
 
     }

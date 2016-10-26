@@ -65,7 +65,7 @@ public class BoardDao implements DatabaseObject {
         statement.setString(1, b.getName());
         statement.setString(2, b.getAbbreviation());
         statement.setString(3, b.getDescription());
-
+        statement.executeUpdate();
         return b;
     }
 
@@ -82,10 +82,10 @@ public class BoardDao implements DatabaseObject {
         deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
 
         deleteBoard.setString(1, filter);
-        int boardDeletionSuccess = deleteBoard.executeUpdate();
+        deleteBoard.executeUpdate();
 
         deletePosts.setString(1, filter);
-        int postsDeletionSuccess = deletePosts.executeUpdate();
+        deletePosts.executeUpdate();
 
         return null;
     }
