@@ -113,8 +113,13 @@ public class Webserver {
                 else
                     p.setTopic_id(null);
                 p.setIp(req.ip());
-                p.setSubject((String) json.get("subject"));
-                p.setMessage((String) json.get("message"));
+                if (json.get("message") == null) throw new Exception("No message");
+                if (json.get("subject") == null) throw new Exception("No subject");
+                String msg = ((String)json.get("message")).trim();
+                String subj = ((String) json.get("subject")).trim();
+                if (msg.isEmpty() || subj.isEmpty()) throw new Exception("Empty message or subject");
+                p.setSubject(subj);
+                p.setMessage(msg);
                 p.setPost_time(System.currentTimeMillis());
                 r.setData(gson.toJson(postDao.post(db, p)));
             } catch (Exception e) {
