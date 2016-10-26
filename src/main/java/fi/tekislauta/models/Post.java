@@ -10,7 +10,7 @@ public class Post {
     private String board_abbrevition;
     private Integer topic_id;
     private String ip;
-    private Integer post_time;
+    private long post_time;
     private String subject;
     private String message;
 
@@ -66,11 +66,11 @@ public class Post {
         }
     }
 
-    public int getPost_time() {
+    public long getPost_time() {
         return post_time;
     }
 
-    public void setPost_time(Integer post_time) {
+    public void setPost_time(long post_time) {
         this.post_time = post_time;
     }
 

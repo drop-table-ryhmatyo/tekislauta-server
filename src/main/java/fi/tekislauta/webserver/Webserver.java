@@ -115,6 +115,7 @@ public class Webserver {
                 p.setIp(req.ip());
                 p.setSubject((String) json.get("subject"));
                 p.setMessage((String) json.get("message"));
+                p.setPost_time(System.currentTimeMillis());
                 r.setData(gson.toJson(postDao.post(db, p)));
             } catch (Exception e) {
                 r.setStatus("Server error");
@@ -135,6 +136,7 @@ public class Webserver {
                 p.setIp(req.ip());
                 p.setSubject((String) json.get("subject"));
                 p.setMessage((String) json.get("message"));
+                p.setPost_time(System.currentTimeMillis());
                 r.setData(postDao.post(db, p));
             } catch (Exception e) {
                 r.setStatus("Server error");

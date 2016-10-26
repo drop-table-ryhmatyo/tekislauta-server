@@ -84,7 +84,7 @@ public class PostDao implements DatabaseObject {
 
     @Override
     public Object post(Database db, Object o) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, subject, message) VALUES (?, ?, ?, ?, ?)");
+        PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
         Post p = (Post) o;
         statement.setString(1, p.getBoard_abbreviation());
         if (p.getTopic_id() == null)
@@ -92,8 +92,9 @@ public class PostDao implements DatabaseObject {
         else
             statement.setInt(2, p.getTopic_id());
         statement.setString(3, p.getIp());
-        statement.setString(4, p.getSubject());
-        statement.setString(5, p.getMessage());
+        statement.setLong(4, p.getPost_time() / 1000);
+        statement.setString(5, p.getSubject());
+        statement.setString(6, p.getMessage());
 
         statement.executeUpdate();
         return p;
