@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
+public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Post, String> {
     private BoardDao boardDao = new BoardDao();
 
     public PostDao() {}
 
     @Override
-    public Object find(Database db, String filter) throws SQLException {
+    public Post find(Database db, String filter) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE  p.id= ?");
         statement.setString(1, filter);
 
@@ -33,7 +33,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
     }
 
     @Override
-    public List<Object> findAll(Database db, String board) throws Exception {
+    public List<Post> findAll(Database db, String board) throws Exception {
         if (boardDao.find(db, board) == null) {
             throw new Exception("Cannot find board " + board);
         }
@@ -56,7 +56,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
         return (List) postList;
     }
 
-    public List<Object> findByTopic(Database db, String board, String topic) throws Exception {
+    public List<Post> findByTopic(Database db, String board, String topic) throws Exception {
         if (boardDao.find(db, board) == null) {
             throw new Exception("Cannot find board " + board);
         }
@@ -84,7 +84,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
         return (List) postList;
     }
 
-    public List<Object> findPageTopics(Database db, String board, String page) throws Exception {
+    public List<Post> findPageTopics(Database db, String board, String page) throws Exception {
         if (boardDao.find(db, board) == null) {
             throw new Exception("Cannot find board " + board);
         }
@@ -118,7 +118,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
     }
 
     @Override
-    public Object post(Database db, Object o) throws Exception {
+    public Post post(Database db, Post o) throws Exception {
         PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
         Post p = (Post) o;
 
@@ -141,7 +141,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject {
     }
 
     @Override
-    public Object delete(Database db, String params) throws SQLException {
+    public Post delete(Database db, String params) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
         statement.setInt(1, Integer.parseInt(params));
         statement.executeUpdate();

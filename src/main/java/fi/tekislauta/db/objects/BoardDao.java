@@ -5,17 +5,18 @@ import fi.tekislauta.models.Board;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Hugo on 14.10.2016.
  */
-public class BoardDao extends ValidatingDao<Board> implements DataAccessObject {
+public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<Board, String> {
 
     public BoardDao() {
     }
 
     @Override
-    public Object find(Database db, String abbreviation) throws SQLException {
+    public Board find(Database db, String abbreviation) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
         statement.setString(1, abbreviation);
 
@@ -35,7 +36,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject {
     }
 
     @Override
-    public Object findAll(Database db, String filter) throws SQLException {
+    public List<Board> findAll(Database db, String filter) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
@@ -56,7 +57,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject {
     }
 
     @Override
-    public Object post(Database db, Object o) throws SQLException, ModelValidationException {
+    public Board post(Database db, Board o) throws SQLException, ModelValidationException {
         Board b = (Board) o;
         validateOnInsert(b);
 
@@ -72,7 +73,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject {
     }
 
     @Override
-    public Object delete(Database db, String filter) throws SQLException {
+    public Board delete(Database db, String filter) throws SQLException {
         Connection con = db.getConnection();
         con.setAutoCommit(false);
 
