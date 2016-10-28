@@ -1,7 +1,5 @@
 package fi.tekislauta.db;
 
-import fi.tekislauta.models.DatabaseObject;
-
 import java.io.*;
 import java.sql.*;
 

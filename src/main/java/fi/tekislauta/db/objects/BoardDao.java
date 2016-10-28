@@ -1,12 +1,9 @@
 package fi.tekislauta.db.objects;
 
 import fi.tekislauta.db.Database;
-import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Board;
-import fi.tekislauta.models.Result;
 
 import java.sql.*;
-import java.util.List;
 import java.util.ArrayList;
 
 /**

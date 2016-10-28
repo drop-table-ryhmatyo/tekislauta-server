@@ -1,7 +1,6 @@
 package fi.tekislauta.db.objects;
 
 import fi.tekislauta.db.Database;
-import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Post;
 
 import java.sql.*;

@@ -1,4 +1,4 @@
-package fi.tekislauta.models;
+package fi.tekislauta.db.objects;
 
 import fi.tekislauta.db.Database;
 
