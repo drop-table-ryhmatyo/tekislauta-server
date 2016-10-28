@@ -5,17 +5,18 @@ import fi.tekislauta.models.Board;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Hugo on 14.10.2016.
  */
-public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
+public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<Board, String> {
 
     public BoardDao() {
     }
 
     @Override
-    public Object fetch(Database db, String abbreviation) throws SQLException {
+    public Board find(Database db, String abbreviation) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
         statement.setString(1, abbreviation);
 
@@ -35,29 +36,25 @@ public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
     }
 
     @Override
-    public Object fetchAll(Database db, String filter) throws SQLException {
+    public List<Board> findAll(Database db, String filter) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
-
         ArrayList<Board> res = new ArrayList();
 
         while (rs.next()) {
             Board b = new Board();
-
             b.setName(rs.getString("name"));
             b.setAbbreviation(rs.getString("abbreviation"));
             b.setDescription(rs.getString("description"));
             res.add(b);
         }
 
-
         return res;
     }
 
     @Override
-    public Object post(Database db, Object o) throws SQLException, ModelValidationException {
-        Board b = (Board) o;
+    public Board post(Database db, Board b) throws SQLException, ModelValidationException {
         validateOnInsert(b);
 
         PreparedStatement statement = db.getConnection().prepareStatement(
@@ -72,23 +69,34 @@ public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
     }
 
     @Override
-    public Object delete(Database db, String filter) throws SQLException {
+    public void delete(Database db, String filter) throws SQLException {
         Connection con = db.getConnection();
-        con.setAutoCommit(false);
+        PreparedStatement deleteBoard = null;
+        PreparedStatement deletePosts = null;
 
-        PreparedStatement deleteBoard;
-        PreparedStatement deletePosts;
+        try {
+            con.setAutoCommit(false);
 
-        deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
-        deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
+            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
+            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
 
-        deleteBoard.setString(1, filter);
-        deleteBoard.executeUpdate();
+            deleteBoard.setString(1, filter);
+            deleteBoard.executeUpdate();
 
-        deletePosts.setString(1, filter);
-        deletePosts.executeUpdate();
+            deletePosts.setString(1, filter);
+            deletePosts.executeUpdate();
 
-        return null;
+            con.commit();
+        } catch (SQLException ex) {
+            if (con != null)
+                con.rollback();
+        } finally {
+            if (deleteBoard != null)
+                deleteBoard.close();
+            if (deletePosts != null)
+                deletePosts.close();
+            con.setAutoCommit(true);
+        }
     }
 
     @Override

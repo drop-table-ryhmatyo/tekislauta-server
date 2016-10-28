@@ -41,7 +41,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.fetchAll(db, ""));
+                r.setData(boardDao.findAll(db, ""));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -53,7 +53,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.fetch(db, req.params("abbreviation")));
+                r.setData(boardDao.find(db, req.params("abbreviation")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -65,7 +65,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.fetchAll(db, req.params("board")));
+                r.setData(postDao.findAll(db, req.params("board")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -77,7 +77,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.fetchPageTopics(db, req.params("board"), req.params("page")));
+                r.setData(postDao.findPageTopics(db, req.params("board"), req.params("page")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -94,7 +94,7 @@ public class Webserver {
             try {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.fetchByTopic(db, req.params("board"), req.params("topic")));
+                r.setData(postDao.findByTopic(db, req.params("board"), req.params("topic")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -106,7 +106,7 @@ public class Webserver {
             try {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.fetch(db, req.params("id")));
+                r.setData(postDao.find(db, req.params("id")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -186,7 +186,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.delete(db, req.params("id")));
+                postDao.delete(db, req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -199,7 +199,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(boardDao.delete(db, req.params("id")));
+                boardDao.delete(db, req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
