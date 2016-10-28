@@ -1,7 +1,7 @@
 package fi.tekislauta.webserver;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.MalformedJsonException;
+import com.google.gson.JsonSyntaxException;
 import fi.tekislauta.db.Database;
 import fi.tekislauta.db.objects.BoardDao;
 import fi.tekislauta.db.objects.ModelValidationException;
@@ -140,7 +140,7 @@ public class Webserver {
                 p.setPost_time(getUnixTimestamp());
 
                 r.setData(postDao.post(p));
-            } catch (MalformedJsonException | ModelValidationException e) {
+            } catch (JsonSyntaxException | ModelValidationException e) {
                 res.status(400);
                 r.setStatus("Error");
                 r.setData("Bad request: " + e.getMessage());

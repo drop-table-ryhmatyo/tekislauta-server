@@ -1,0 +1,15 @@
+package fi.tekislauta.db.objects;
+
+/**
+ * Created by Jalle on 29.10.2016.
+ */
+public class DaoException extends Exception {
+
+    public DaoException(String msg) {
+        super(msg);
+    }
+
+    public DaoException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+}

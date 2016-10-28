@@ -33,7 +33,6 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         b.setAbbreviation(rs.getString("abbreviation"));
         b.setDescription(rs.getString("description"));
 
-
         return b;
     }
 
