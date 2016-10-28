@@ -17,7 +17,10 @@ public class Database {
 
     void connect() {
         try {
-            this._dbConn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH);
+            if(System.getenv("DATABASE_URL") != null)
+                this._dbConn = DriverManager.getConnection(System.getenv("DATABASE_URL"));
+            else
+                this._dbConn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH);
             this._dbStmt = this._dbConn.createStatement();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
