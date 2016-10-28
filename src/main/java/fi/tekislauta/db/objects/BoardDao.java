@@ -9,13 +9,13 @@ import java.util.ArrayList;
 /**
  * Created by Hugo on 14.10.2016.
  */
-public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
+public class BoardDao extends ValidatingDao<Board> implements DataAccessObject {
 
     public BoardDao() {
     }
 
     @Override
-    public Object fetch(Database db, String abbreviation) throws SQLException {
+    public Object find(Database db, String abbreviation) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
         statement.setString(1, abbreviation);
 
@@ -35,7 +35,7 @@ public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
     }
 
     @Override
-    public Object fetchAll(Database db, String filter) throws SQLException {
+    public Object findAll(Database db, String filter) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
