@@ -1,0 +1,1 @@
+web: java -jar /out/artifacts/tekislauta_server_jar/tekislauta_server.jar
