@@ -1,15 +1,19 @@
 package fi.tekislauta.webserver;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.MalformedJsonException;
 import fi.tekislauta.db.Database;
 import fi.tekislauta.db.objects.BoardDao;
+import fi.tekislauta.db.objects.ModelValidationException;
 import fi.tekislauta.db.objects.PostDao;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Post;
 import fi.tekislauta.models.Result;
+import spark.Request;
 
 import static spark.Spark.*;
 
+import java.io.PrintStream;
 import java.util.Map;
 import java.util.Base64;
 
@@ -114,33 +118,41 @@ public class Webserver {
         });
 
         post("api/boards/:board/posts/", (req, res) -> {
+            // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
             Result r = new Result();
             try {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
+
                 Map json = gson.fromJson(req.body(), Map.class);
+                if (json.get("topic_id") != null) {
+                    // This endpoint only creates new topics. No replies. Nada. noty.
+                    res.status(400);
+                    r.setStatus("Error");
+                    r.setData("This endpoint creates new topics. Topic replies go to POST api/boards/:board/posts/topics/:topic");
+                    return r;
+                }
                 Post p = new Post();
                 p.setBoard_abbrevition(req.params("board"));
-                if (json.get("topic_id") != null)
-                    p.setTopic_id(Integer.parseInt(json.get("topic_id").toString().split("\\.")[0]));
-                else
-                    p.setTopic_id(null);
                 p.setIp(req.ip());
-                if (json.get("message") == null) throw new Exception("No message");
-                if (json.get("subject") == null) throw new Exception("No subject");
-                String msg = ((String) json.get("message")).trim();
-                String subj = ((String) json.get("subject")).trim();
-                if (msg.isEmpty() || subj.isEmpty()) throw new Exception("Empty message or subject");
-                p.setSubject(subj);
-                p.setMessage(msg);
-                p.setPost_time(getUnixTimestamp()); // don't need ms accuracy, s accuracy is fine
+                p.setSubject(((String) json.get("subject")).trim());
+                p.setMessage(((String) json.get("message")).trim());
+                p.setPost_time(getUnixTimestamp());
+
                 r.setData(gson.toJson(postDao.post(db, p)));
+            } catch (MalformedJsonException | ModelValidationException e) {
+                res.status(400);
+                r.setStatus("Error");
+                r.setData("Bad request: " + e.getMessage());
             } catch (Exception e) {
-                r.setStatus("Server error " + e.getMessage());
+                res.status(500);
+                r.setStatus("Error");
+                r.setStatus("Server error: " + e.getMessage());
+                dumpRequestException(req, e);
             }
 
-            return gson.toJson(r);
-        });
+            return r;
+        }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
             Result r = new Result();
@@ -215,6 +227,13 @@ public class Webserver {
 
     private int getUnixTimestamp() {
         return (int)(System.currentTimeMillis() / 1000); // we deal with seconds around here
+    }
+
+    private void dumpRequestException(Request request, Exception e) {
+        System.err.println("Error!");
+        System.err.printf("Request body:%n%s%n", request.body());
+        System.err.print("Exception: ");
+        e.printStackTrace(new PrintStream(System.err));
     }
 }
 
