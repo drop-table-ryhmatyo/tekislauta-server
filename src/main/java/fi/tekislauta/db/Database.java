@@ -6,8 +6,8 @@ import java.io.*;
 import java.sql.*;
 
 public class Database {
-    private final String SCHEMA_PATH = "db/schema.sql";
-    private final String DB_PATH = "db/tekislauta.db";
+    private final String SCHEMA = "PRAGMA foreign_keys = ON;CREATE TABLE Board( name varchar(64) NOT NULL, abbreviation varchar(4) NOT NULL, description varchar(1024) NULL, PRIMARY KEY (abbreviation));CREATE TABLE Post( id integer, board_abbreviation varchar(4) NOT NULL, topic_id integer NULL, ip varchar(16) NOT NULL, post_time integer(4) NOT NULL DEFAULT (strftime('%s', 'now')), subject varchar(128) NULL, message text NOT NULL, PRIMARY KEY (id), FOREIGN KEY (board_abbreviation) REFERENCES Board(abbreviation), FOREIGN KEY (topic_id) REFERENCES Post(id));";
+    private final String DB_PATH = "tekislauta.sql";
     private Connection _dbConn = null;
     private Statement _dbStmt = null;
 
@@ -17,7 +17,7 @@ public class Database {
 
     void connect() {
         try {
-            if(System.getenv("DATABASE_URL") != null)
+            if (System.getenv("DATABASE_URL") != null)
                 this._dbConn = DriverManager.getConnection(System.getenv("DATABASE_URL"));
             else
                 this._dbConn = DriverManager.getConnection("jdbc:sqlite:" + DB_PATH);
@@ -34,12 +34,8 @@ public class Database {
                 ResultSet postRes = dbm.getTables(null, null, "Post", null);
 
                 if (!boardRes.next() || !postRes.next()) {
-                    try {
-                        // Tables do not exist, so let's create them!
-                        this._dbStmt.executeUpdate(readSchema()); // Reading the SCHEMA_PATH file.
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
+                    // Tables do not exist, so let's create them!
+                    this._dbStmt.executeUpdate(SCHEMA); // Reading the SCHEMA_PATH file.
                 }
 
             } catch (SQLException e) {
@@ -48,8 +44,9 @@ public class Database {
         }
     }
 
+    // TODO: Read schema from file
     String readSchema() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(SCHEMA_PATH));
+        BufferedReader reader = new BufferedReader(new FileReader(this.getClass().getResource("").getFile()));
         String res = "";
         String line;
         // Loop every line
@@ -58,11 +55,11 @@ public class Database {
         }
 
         return res;
-     }
+    }
 
-     public Connection getConnection() {
-         return this._dbConn;
-     }
+    public Connection getConnection() {
+        return this._dbConn;
+    }
 }
 
 

@@ -12,6 +12,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <repositories>
+        <repository>
+            <id>project.local</id>
+            <name>project</name>
+            <url>file:${project.basedir}/db</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
