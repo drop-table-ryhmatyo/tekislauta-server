@@ -134,7 +134,7 @@ public class Webserver {
                 p.setSubject(subj);
                 p.setMessage(msg);
                 p.setPost_time(getUnixTimestamp()); // don't need ms accuracy, s accuracy is fine
-                r.setData(gson.toJson(postDao.post(db, p)));
+                r.setData(postDao.post(db, p));
             } catch (Exception e) {
                 r.setStatus("Server error " + e.getMessage());
             }
