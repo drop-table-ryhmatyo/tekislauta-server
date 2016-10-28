@@ -41,7 +41,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
-        ArrayList<Board> res = new ArrayList();
+        ArrayList<Board> res = new ArrayList<>();
 
         while (rs.next()) {
             Board b = new Board();
