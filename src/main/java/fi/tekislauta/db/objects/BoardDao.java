@@ -40,25 +40,21 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
-
         ArrayList<Board> res = new ArrayList();
 
         while (rs.next()) {
             Board b = new Board();
-
             b.setName(rs.getString("name"));
             b.setAbbreviation(rs.getString("abbreviation"));
             b.setDescription(rs.getString("description"));
             res.add(b);
         }
 
-
         return res;
     }
 
     @Override
-    public Board post(Database db, Board o) throws SQLException, ModelValidationException {
-        Board b = (Board) o;
+    public Board post(Database db, Board b) throws SQLException, ModelValidationException {
         validateOnInsert(b);
 
         PreparedStatement statement = db.getConnection().prepareStatement(
@@ -75,19 +71,32 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     @Override
     public void delete(Database db, String filter) throws SQLException {
         Connection con = db.getConnection();
-        con.setAutoCommit(false);
+        PreparedStatement deleteBoard = null;
+        PreparedStatement deletePosts = null;
 
-        PreparedStatement deleteBoard;
-        PreparedStatement deletePosts;
+        try {
+            con.setAutoCommit(false);
 
-        deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
-        deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
+            deleteBoard = con.prepareStatement("DELETE FROM Board WHERE abbreviation = ?");
+            deletePosts = con.prepareStatement("DELETE FROM Post WHERE board_abbreviation = ?");
 
-        deleteBoard.setString(1, filter);
-        deleteBoard.executeUpdate();
+            deleteBoard.setString(1, filter);
+            deleteBoard.executeUpdate();
 
-        deletePosts.setString(1, filter);
-        deletePosts.executeUpdate();
+            deletePosts.setString(1, filter);
+            deletePosts.executeUpdate();
+
+            con.commit();
+        } catch (SQLException ex) {
+            if (con != null)
+                con.rollback();
+        } finally {
+            if (deleteBoard != null)
+                deleteBoard.close();
+            if (deletePosts != null)
+                deletePosts.close();
+            con.setAutoCommit(true);
+        }
     }
 
     @Override
