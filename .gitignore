@@ -3,6 +3,7 @@
 
 # Our dbs, server should generate them automatically
 /db/
+*.db
 
 *.class
 
