@@ -21,7 +21,6 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         ResultSet rs = statement.executeQuery();
 
         Post p = new Post();
-
         p.setId(rs.getInt("id"));
         p.setTopic_id((Integer) rs.getObject("topic_id"));
         p.setIp(rs.getString("ip"));
@@ -51,9 +50,10 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             p.setPost_time(rs.getInt("post_time"));
             p.setSubject(rs.getString("subject"));
             p.setMessage(rs.getString("message"));
+
             postList.add(p);
         }
-        return (List) postList;
+        return postList;
     }
 
     public List<Post> findByTopic(Database db, String board, String topic) throws Exception {
@@ -70,7 +70,6 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
 
         while (rs.next()) {
             Post p = new Post();
-
             p.setId(rs.getInt("id"));
             p.setTopic_id((Integer) rs.getObject("topic_id"));
             p.setIp(rs.getString("ip"));
@@ -81,7 +80,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             postList.add(p);
         }
 
-        return (List) postList;
+        return postList;
     }
 
     public List<Post> findPageTopics(Database db, String board, String page) throws Exception {
@@ -118,9 +117,8 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
     }
 
     @Override
-    public Post post(Database db, Post o) throws Exception {
+    public Post post(Database db, Post p) throws Exception {
         PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
-        Post p = (Post) o;
 
         if (boardDao.find(db, p.getBoard_abbreviation()) == null) {
             throw new Exception("Cannot find board " + p.getBoard_abbreviation());
