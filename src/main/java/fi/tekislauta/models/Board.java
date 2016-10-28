@@ -1,13 +1,5 @@
 package fi.tekislauta.models;
 
-import fi.tekislauta.db.Database;
-
-import javax.xml.crypto.Data;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-
 public class Board {
 
     private String name;

@@ -1,6 +1,5 @@
 package fi.tekislauta.models;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
 import java.security.MessageDigest;
 
