@@ -141,12 +141,10 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
     }
 
     @Override
-    public Post delete(Database db, String params) throws SQLException {
+    public void delete(Database db, String params) throws SQLException {
         PreparedStatement statement = db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
         statement.setInt(1, Integer.parseInt(params));
         statement.executeUpdate();
-        return null;
-
     }
 
     @Override

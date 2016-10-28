@@ -186,7 +186,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.delete(db, req.params("id")));
+                postDao.delete(db, req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -199,7 +199,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(boardDao.delete(db, req.params("id")));
+                boardDao.delete(db, req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }

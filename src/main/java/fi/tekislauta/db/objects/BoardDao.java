@@ -73,7 +73,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     }
 
     @Override
-    public Board delete(Database db, String filter) throws SQLException {
+    public void delete(Database db, String filter) throws SQLException {
         Connection con = db.getConnection();
         con.setAutoCommit(false);
 
@@ -88,8 +88,6 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
 
         deletePosts.setString(1, filter);
         deletePosts.executeUpdate();
-
-        return null;
     }
 
     @Override
