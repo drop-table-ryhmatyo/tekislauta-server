@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import fi.tekislauta.db.Database;
 import fi.tekislauta.db.objects.BoardDao;
+import fi.tekislauta.db.objects.DaoException;
 import fi.tekislauta.db.objects.ModelValidationException;
 import fi.tekislauta.db.objects.PostDao;
 import fi.tekislauta.models.Board;
@@ -39,52 +40,60 @@ public class Webserver {
     public void listen() {
         port(this.port);
 
+        exception(ModelValidationException.class, (exception, req, res) -> {
+            res.status(400); // "Bad request"
+            Result r = new Result();
+            r.setStatus("Error");
+            r.setData("Malformed request or missing data! " + exception.getMessage());
+            res.body(gson.toJson(r));
+        });
+
+        exception(JsonSyntaxException.class, (ex, req, res) -> {
+            res.status(400); // "Bad request"
+            Result r = new Result();
+            r.setStatus("Error");
+            r.setData("Malformed request! Please check your JSON syntax!");
+        });
+
+        exception(DaoException.class, (exception, req, res) -> {
+            res.status(500); // "Internal server error"
+            Result r = new Result();
+            r.setStatus("Error");
+            r.setData("A server error has occurred.");
+            dumpRequestException(req, exception);
+            res.body(gson.toJson(r));
+        });
+
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Content-Type", "application/json; charset=utf-8");
-                res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.findAll(""));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Content-Type", "application/json; charset=utf-8");
+            res.header("Access-Control-Allow-Origin", "*");
+            r.setData(boardDao.findAll(""));
             return gson.toJson(r);
         });
 
         get("/api/boards/:abbreviation", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Content-Type", "application/json; charset=utf-8");
-                res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.find(req.params("abbreviation")));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Content-Type", "application/json; charset=utf-8");
+            res.header("Access-Control-Allow-Origin", "*");
+            r.setData(boardDao.find(req.params("abbreviation")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Content-Type", "application/json; charset=utf-8");
-                res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.findAll(req.params("board")));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Content-Type", "application/json; charset=utf-8");
+            res.header("Access-Control-Allow-Origin", "*");
+            r.setData(postDao.findAll(req.params("board")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Content-Type", "application/json; charset=utf-8");
-                res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Content-Type", "application/json; charset=utf-8");
+            res.header("Access-Control-Allow-Origin", "*");
+            r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
             return gson.toJson(r);
         });
 
@@ -95,131 +104,103 @@ public class Webserver {
 
         get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+            r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
             return gson.toJson(r);
         });
 
         get("/api/posts/:id", (req, res) -> {
             Result r = new Result();
-            try {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.find(req.params("id")));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+            r.setData(postDao.find(req.params("id")));
             return gson.toJson(r);
         });
 
         post("api/boards/:board/posts/", (req, res) -> {
             // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
-            Result r = new Result();
-            try {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
 
-                Map json = gson.fromJson(req.body(), Map.class);
-                if (json.get("topic_id") != null) {
-                    // This endpoint only creates new topics. No replies. Nada. noty.
-                    res.status(400);
-                    r.setStatus("Error");
-                    r.setData("This endpoint creates new topics. Topic replies go to POST api/boards/:board/posts/topics/:topic");
-                    return r;
-                }
-                Post p = new Post();
-                p.setBoard_abbrevition(req.params("board"));
-                p.setIp(req.ip());
-                p.setSubject(((String) json.get("subject")).trim());
-                p.setMessage(((String) json.get("message")).trim());
-                p.setPost_time(getUnixTimestamp());
-
-                r.setData(postDao.post(p));
-            } catch (JsonSyntaxException | ModelValidationException e) {
+            Result result = new Result();
+            Post post = gson.fromJson(req.body(), Post.class); // should parse subject and message
+            if (post.getTopic_id() != null) {
+                // This endpoint only creates new topics. No replies. Nada. noty.
                 res.status(400);
-                r.setStatus("Error");
-                r.setData("Malformed request or missing data!");
-            } catch (Exception e) {
-                res.status(500);
-                r.setStatus("Error");
-                r.setStatus("Server error: " + e.getMessage());
-                dumpRequestException(req, e);
+                result.setStatus("Error");
+                result.setData("This endpoint creates new topics. Topic replies go to POST api/boards/:board/posts/topics/:topic");
+                return result;
             }
 
-            return r;
+            post.setBoard_abbrevition(req.params("board"));
+            post.setIp(req.ip());
+            post.setPost_time(getUnixTimestamp());
+            result.setData(postDao.post(post));
+
+            return result;
         }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+
             Result r = new Result();
-            try {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                Map json = gson.fromJson(req.body(), Map.class);
-                Post p = new Post();
-                p.setBoard_abbrevition(req.params("board"));
-                p.setTopic_id(Integer.parseInt(req.params("topic")));
-                p.setIp(req.ip());
-                p.setSubject((String) json.get("subject"));
-                p.setMessage((String) json.get("message"));
-                p.setPost_time(getUnixTimestamp());
-                r.setData(postDao.post(p));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            Map json = gson.fromJson(req.body(), Map.class);
+            Post p = new Post();
+            p.setBoard_abbrevition(req.params("board"));
+            p.setTopic_id(Integer.parseInt(req.params("topic")));
+            p.setIp(req.ip());
+            p.setSubject((String) json.get("subject"));
+            p.setMessage((String) json.get("message"));
+            p.setPost_time(getUnixTimestamp());
+            r.setData(postDao.post(p));
 
             return gson.toJson(r);
         });
 
         post("/api/boards/", (req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+
             Result r = new Result();
-            try {
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                Map json = gson.fromJson(req.body(), Map.class);
-                Board b = new Board();
-                b.setName((String) json.get("name"));
-                b.setAbbreviation((String) json.get("abbreviation"));
-                b.setDescription((String) json.get("description"));
-                r.setData(boardDao.post(b));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
-            }
+            Map json = gson.fromJson(req.body(), Map.class);
+            Board b = new Board();
+            b.setName((String) json.get("name"));
+            b.setAbbreviation((String) json.get("abbreviation"));
+            b.setDescription((String) json.get("description"));
+            r.setData(boardDao.post(b));
             return gson.toJson(r);
         });
 
         delete("api/posts/:id", (req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+
             Result r = new Result();
-            try {
-                if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                postDao.delete(req.params("id"));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
+            if (!isAuthrorized(req.headers("Authorization"))) {
+                res.status(401); // unauthorized
+                r.setStatus("Unauthorized");
             }
+            postDao.delete(req.params("id"));
             return gson.toJson(r);
         });
 
         delete("api/boards/:id", (req, res) -> {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Content-Type", "application/json; charset=utf-8");
+
             Result r = new Result();
-            try {
-                if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
-                res.header("Access-Control-Allow-Origin", "*");
-                res.header("Content-Type", "application/json; charset=utf-8");
-                boardDao.delete(req.params("id"));
-            } catch (Exception e) {
-                r.setStatus("Server error: " + e.getMessage());
+            if (!isAuthrorized(req.headers("Authorization"))) {
+                res.status(401); // unauthorized
+                r.setStatus("Unauthorized");
             }
+            boardDao.delete(req.params("id"));
             return gson.toJson(r);
         });
     }
 
-    boolean isAuthrorized(String hdr) {
+    private boolean isAuthrorized(String hdr) {
         byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
         String[] credentials = new String(decryptedHeader).split(":");
         return (credentials[0].equals(USER) && credentials[1].equals(PW));

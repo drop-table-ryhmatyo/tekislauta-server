@@ -18,59 +18,71 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     }
 
     @Override
-    public Board find(String abbreviation) throws SQLException {
-        PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
-        statement.setString(1, abbreviation);
+    public Board find(String abbreviation) throws DaoException {
+        try {
+            PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
+            statement.setString(1, abbreviation);
 
-        ResultSet rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-        if (!rs.next())
-            return null;
+            if (!rs.next())
+                return null;
 
-        Board b = new Board();
-
-        b.setName(rs.getString("name"));
-        b.setAbbreviation(rs.getString("abbreviation"));
-        b.setDescription(rs.getString("description"));
-
-        return b;
-    }
-
-    @Override
-    public List<Board> findAll(String filter) throws SQLException {
-        PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board");
-
-        ResultSet rs = statement.executeQuery();
-        ArrayList<Board> res = new ArrayList<>();
-
-        while (rs.next()) {
             Board b = new Board();
+
             b.setName(rs.getString("name"));
             b.setAbbreviation(rs.getString("abbreviation"));
             b.setDescription(rs.getString("description"));
-            res.add(b);
-        }
 
-        return res;
+            return b;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
-    public Board post(Board b) throws SQLException, ModelValidationException {
+    public List<Board> findAll(String filter) throws DaoException {
+        try {
+            PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board");
+
+            ResultSet rs = statement.executeQuery();
+            ArrayList<Board> res = new ArrayList<>();
+
+            while (rs.next()) {
+                Board b = new Board();
+                b.setName(rs.getString("name"));
+                b.setAbbreviation(rs.getString("abbreviation"));
+                b.setDescription(rs.getString("description"));
+                res.add(b);
+            }
+
+            return res;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Board post(Board b) throws DaoException, ModelValidationException {
         validateOnInsert(b);
 
-        PreparedStatement statement = this.database.getConnection().prepareStatement(
-                "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
-                Statement.RETURN_GENERATED_KEYS
-        );
-        statement.setString(1, b.getName());
-        statement.setString(2, b.getAbbreviation());
-        statement.setString(3, b.getDescription());
-        statement.executeUpdate();
-        return b;
+        try {
+            PreparedStatement statement = this.database.getConnection().prepareStatement(
+                    "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            statement.setString(1, b.getName());
+            statement.setString(2, b.getAbbreviation());
+            statement.setString(3, b.getDescription());
+            statement.executeUpdate();
+            return b;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
-    public void delete(String filter) throws SQLException {
+    public void delete(String filter) throws DaoException {
         Connection con = this.database.getConnection();
         PreparedStatement deleteBoard = null;
         PreparedStatement deletePosts = null;
@@ -89,14 +101,24 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
 
             con.commit();
         } catch (SQLException ex) {
-            if (con != null)
-                con.rollback();
+            try {
+                if (con != null)
+                    con.rollback();
+            } catch (SQLException e) {
+                // RIP
+            } finally {
+                throw new DaoException(ex);
+            }
         } finally {
-            if (deleteBoard != null)
-                deleteBoard.close();
-            if (deletePosts != null)
-                deletePosts.close();
-            con.setAutoCommit(true);
+            try {
+                if (deleteBoard != null)
+                    deleteBoard.close();
+                if (deletePosts != null)
+                    deletePosts.close();
+                con.setAutoCommit(true);
+            } catch (SQLException e) {
+                // RIP
+            }
         }
     }
 

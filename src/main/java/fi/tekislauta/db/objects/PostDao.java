@@ -18,76 +18,90 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
     }
 
     @Override
-    public Post find(String filter) throws SQLException {
-        PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE  p.id= ?");
-        statement.setString(1, filter);
+    public Post find(String filter) throws DaoException {
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE  p.id= ?");
+            statement.setString(1, filter);
 
-        ResultSet rs = statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-        Post p = new Post();
-        p.setId(rs.getInt("id"));
-        p.setTopic_id((Integer) rs.getObject("topic_id"));
-        p.setIp(rs.getString("ip"));
-        p.setPost_time(rs.getInt("post_time"));
-        p.setSubject(rs.getString("subject"));
-        p.setMessage(rs.getString("message"));
+            Post p = new Post();
+            p.setId(rs.getInt("id"));
+            p.setTopic_id((Integer) rs.getObject("topic_id"));
+            p.setIp(rs.getString("ip"));
+            p.setPost_time(rs.getInt("post_time"));
+            p.setSubject(rs.getString("subject"));
+            p.setMessage(rs.getString("message"));
 
-        return p;
+            return p;
+        } catch (SQLException ex) {
+            throw new DaoException(ex);
+        }
     }
 
     @Override
-    public List<Post> findAll(String board) throws DaoException, SQLException {
+    public List<Post> findAll(String board) throws DaoException {
         if (boardDao.find(board) == null) {
             throw new DaoException("Cannot find board " + board);
         }
-        PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL LIMIT 10");
-        statement.setString(1, board);
-        ResultSet rs = statement.executeQuery();
 
-        ArrayList<Post> postList = new ArrayList<>();
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL LIMIT 10");
+            statement.setString(1, board);
+            ResultSet rs = statement.executeQuery();
 
-        while (rs.next()) {
-            Post p = new Post();
-            p.setId(rs.getInt("id"));
-            p.setTopic_id((Integer) rs.getObject("topic_id"));
-            p.setIp(rs.getString("ip"));
-            p.setPost_time(rs.getInt("post_time"));
-            p.setSubject(rs.getString("subject"));
-            p.setMessage(rs.getString("message"));
+            ArrayList<Post> postList = new ArrayList<>();
 
-            postList.add(p);
+            while (rs.next()) {
+                Post p = new Post();
+                p.setId(rs.getInt("id"));
+                p.setTopic_id((Integer) rs.getObject("topic_id"));
+                p.setIp(rs.getString("ip"));
+                p.setPost_time(rs.getInt("post_time"));
+                p.setSubject(rs.getString("subject"));
+                p.setMessage(rs.getString("message"));
+
+                postList.add(p);
+            }
+            return postList;
+        } catch (SQLException ex) {
+            throw new DaoException(ex);
         }
-        return postList;
     }
 
-    public List<Post> findByTopic(String board, String topic) throws DaoException, SQLException {
+    public List<Post> findByTopic(String board, String topic) throws DaoException {
         if (boardDao.find(board) == null) {
             throw new DaoException("Cannot find board " + board);
         }
-        PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR (p.id = ? AND topic_id IS NULL))");
-        statement.setString(1, board);
-        statement.setInt(2, Integer.parseInt(topic));
-        statement.setInt(3, Integer.parseInt(topic));
-        ResultSet rs = statement.executeQuery();
 
-        ArrayList<Post> postList = new ArrayList<>();
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR (p.id = ? AND topic_id IS NULL))");
+            statement.setString(1, board);
+            statement.setInt(2, Integer.parseInt(topic));
+            statement.setInt(3, Integer.parseInt(topic));
+            ResultSet rs = statement.executeQuery();
 
-        while (rs.next()) {
-            Post p = new Post();
-            p.setId(rs.getInt("id"));
-            p.setTopic_id((Integer) rs.getObject("topic_id"));
-            p.setIp(rs.getString("ip"));
-            p.setPost_time(rs.getInt("post_time"));
-            p.setSubject(rs.getString("subject"));
-            p.setMessage(rs.getString("message"));
+            ArrayList<Post> postList = new ArrayList<>();
 
-            postList.add(p);
+            while (rs.next()) {
+                Post p = new Post();
+                p.setId(rs.getInt("id"));
+                p.setTopic_id((Integer) rs.getObject("topic_id"));
+                p.setIp(rs.getString("ip"));
+                p.setPost_time(rs.getInt("post_time"));
+                p.setSubject(rs.getString("subject"));
+                p.setMessage(rs.getString("message"));
+
+                postList.add(p);
+            }
+
+            return postList;
+        } catch (SQLException ex) {
+            throw new DaoException(ex);
         }
-
-        return postList;
     }
 
-    public List<Post> findPageTopics(String board, String page) throws DaoException, SQLException {
+    public List<Post> findPageTopics(String board, String page) throws DaoException {
         if (boardDao.find(board) == null) {
             throw new DaoException("Cannot find board " + board);
         }
@@ -98,57 +112,70 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         } catch (Exception e) {
             throw new DaoException("1337", e);
         }
-        PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
-        statement.setString(1, board);
-        ResultSet rs = statement.executeQuery();
 
-        ArrayList<Post> postList = new ArrayList<>();
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
+            statement.setString(1, board);
+            ResultSet rs = statement.executeQuery();
 
-        while (rs.next()) {
-            Post p = new Post();
+            ArrayList<Post> postList = new ArrayList<>();
 
-            p.setId(rs.getInt("id"));
-            p.setTopic_id((Integer) rs.getObject("topic_id"));
-            p.setIp(rs.getString("ip"));
-            p.setPost_time(rs.getInt("post_time"));
-            p.setSubject(rs.getString("subject"));
-            p.setMessage(rs.getString("message"));
+            while (rs.next()) {
+                Post p = new Post();
 
-            postList.add(p);
+                p.setId(rs.getInt("id"));
+                p.setTopic_id((Integer) rs.getObject("topic_id"));
+                p.setIp(rs.getString("ip"));
+                p.setPost_time(rs.getInt("post_time"));
+                p.setSubject(rs.getString("subject"));
+                p.setMessage(rs.getString("message"));
+
+                postList.add(p);
+            }
+
+            return postList;
+        } catch (SQLException ex) {
+            throw new DaoException(ex);
         }
-
-        return postList;
     }
 
     @Override
-    public Post post(Post p) throws ModelValidationException, DaoException, SQLException {
+    public Post post(Post p) throws DaoException, ModelValidationException {
         validateOnInsert(p);
 
-        PreparedStatement statement = this.db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
 
-        if (boardDao.find(p.getBoard_abbreviation()) == null) {
-            throw new DaoException("Cannot find board " + p.getBoard_abbreviation());
+            if (boardDao.find(p.getBoard_abbreviation()) == null) {
+                throw new DaoException("Cannot find board " + p.getBoard_abbreviation());
+            }
+
+            statement.setString(1, p.getBoard_abbreviation());
+            if (p.getTopic_id() == null)
+                statement.setNull(2, Types.INTEGER);
+            else
+                statement.setInt(2, p.getTopic_id());
+            statement.setString(3, p.getIp());
+            statement.setInt(4, p.getPost_time());
+            statement.setString(5, p.getSubject());
+            statement.setString(6, p.getMessage());
+
+            statement.executeUpdate();
+            return p;
+        } catch (SQLException ex) {
+            throw new DaoException(ex);
         }
-
-        statement.setString(1, p.getBoard_abbreviation());
-        if (p.getTopic_id() == null)
-            statement.setNull(2, Types.INTEGER);
-        else
-            statement.setInt(2, p.getTopic_id());
-        statement.setString(3, p.getIp());
-        statement.setInt(4, p.getPost_time());
-        statement.setString(5, p.getSubject());
-        statement.setString(6, p.getMessage());
-
-        statement.executeUpdate();
-        return p;
     }
 
     @Override
-    public void delete(String params) throws SQLException {
-        PreparedStatement statement = this.db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
-        statement.setInt(1, Integer.parseInt(params));
-        statement.executeUpdate();
+    public void delete(String params) throws DaoException {
+        try {
+            PreparedStatement statement = this.db.getConnection().prepareStatement("DELETE FROM Post WHERE id = ?");
+            statement.setInt(1, Integer.parseInt(params));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
