@@ -21,7 +21,7 @@ public class Webserver {
 
     private final int port;
     private final Gson gson;
-    private final Database db;
+    //private final Database db;
     private final BoardDao boardDao;
     private final PostDao postDao;
 
@@ -31,9 +31,9 @@ public class Webserver {
     public Webserver(int port) {
         this.port = port;
         this.gson = new Gson();
-        this.db = new Database();
-        this.boardDao = new BoardDao();
-        this.postDao = new PostDao();
+        Database db = new Database();
+        this.boardDao = new BoardDao(db);
+        this.postDao = new PostDao(db);
     }
 
     public void listen() {
@@ -45,7 +45,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.findAll(db, ""));
+                r.setData(boardDao.findAll(""));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -57,7 +57,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(boardDao.find(db, req.params("abbreviation")));
+                r.setData(boardDao.find(req.params("abbreviation")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -69,7 +69,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.findAll(db, req.params("board")));
+                r.setData(postDao.findAll(req.params("board")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -81,7 +81,7 @@ public class Webserver {
             try {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 res.header("Access-Control-Allow-Origin", "*");
-                r.setData(postDao.findPageTopics(db, req.params("board"), req.params("page")));
+                r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -98,7 +98,7 @@ public class Webserver {
             try {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.findByTopic(db, req.params("board"), req.params("topic")));
+                r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -110,7 +110,7 @@ public class Webserver {
             try {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                r.setData(postDao.find(db, req.params("id")));
+                r.setData(postDao.find(req.params("id")));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -139,7 +139,7 @@ public class Webserver {
                 p.setMessage(((String) json.get("message")).trim());
                 p.setPost_time(getUnixTimestamp());
 
-                r.setData(postDao.post(db, p));
+                r.setData(postDao.post(p));
             } catch (MalformedJsonException | ModelValidationException e) {
                 res.status(400);
                 r.setStatus("Error");
@@ -167,7 +167,7 @@ public class Webserver {
                 p.setSubject((String) json.get("subject"));
                 p.setMessage((String) json.get("message"));
                 p.setPost_time(getUnixTimestamp());
-                r.setData(postDao.post(db, p));
+                r.setData(postDao.post(p));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -185,7 +185,7 @@ public class Webserver {
                 b.setName((String) json.get("name"));
                 b.setAbbreviation((String) json.get("abbreviation"));
                 b.setDescription((String) json.get("description"));
-                r.setData(boardDao.post(db, b));
+                r.setData(boardDao.post(b));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -198,7 +198,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                postDao.delete(db, req.params("id"));
+                postDao.delete(req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
@@ -211,7 +211,7 @@ public class Webserver {
                 if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
-                boardDao.delete(db, req.params("id"));
+                boardDao.delete(req.params("id"));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }

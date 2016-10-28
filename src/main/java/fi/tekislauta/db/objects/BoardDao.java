@@ -11,13 +11,15 @@ import java.util.List;
  * Created by Hugo on 14.10.2016.
  */
 public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<Board, String> {
+    private final Database database;
 
-    public BoardDao() {
+    public BoardDao(Database database) {
+        this.database = database;
     }
 
     @Override
-    public Board find(Database db, String abbreviation) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
+    public Board find(String abbreviation) throws SQLException {
+        PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board WHERE abbreviation= ?");
         statement.setString(1, abbreviation);
 
         ResultSet rs = statement.executeQuery();
@@ -36,8 +38,8 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     }
 
     @Override
-    public List<Board> findAll(Database db, String filter) throws SQLException {
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Board");
+    public List<Board> findAll(String filter) throws SQLException {
+        PreparedStatement statement = this.database.getConnection().prepareStatement("SELECT * FROM Board");
 
         ResultSet rs = statement.executeQuery();
         ArrayList<Board> res = new ArrayList();
@@ -54,10 +56,10 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     }
 
     @Override
-    public Board post(Database db, Board b) throws SQLException, ModelValidationException {
+    public Board post(Board b) throws SQLException, ModelValidationException {
         validateOnInsert(b);
 
-        PreparedStatement statement = db.getConnection().prepareStatement(
+        PreparedStatement statement = this.database.getConnection().prepareStatement(
                 "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         );
@@ -69,8 +71,8 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     }
 
     @Override
-    public void delete(Database db, String filter) throws SQLException {
-        Connection con = db.getConnection();
+    public void delete(String filter) throws SQLException {
+        Connection con = this.database.getConnection();
         PreparedStatement deleteBoard = null;
         PreparedStatement deletePosts = null;
 
