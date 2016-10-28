@@ -60,7 +60,7 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
         if (boardDao.fetch(db, board) == null) {
             throw new Exception("Cannot find board " + board);
         }
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR (p.id = ? AND topic_id IS NULL)");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR (p.id = ? AND topic_id IS NULL))");
         statement.setString(1, board);
         statement.setInt(2, Integer.parseInt(topic));
         statement.setInt(3, Integer.parseInt(topic));
