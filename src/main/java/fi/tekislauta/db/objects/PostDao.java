@@ -120,7 +120,6 @@ public class PostDao implements DatabaseObject {
         else
             statement.setInt(2, p.getTopic_id());
         statement.setString(3, p.getIp());
-        statement.setLong(4, p.getPost_time() / 1000);
         statement.setString(5, p.getSubject());
         statement.setString(6, p.getMessage());
 

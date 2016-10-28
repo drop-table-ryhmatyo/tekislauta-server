@@ -133,7 +133,7 @@ public class Webserver {
                 if (msg.isEmpty() || subj.isEmpty()) throw new Exception("Empty message or subject");
                 p.setSubject(subj);
                 p.setMessage(msg);
-                p.setPost_time(System.currentTimeMillis());
+                p.setPost_time(System.currentTimeMillis() / 1000); // don't need ms accuracy, s accuracy is fine
                 r.setData(gson.toJson(postDao.post(db, p)));
             } catch (Exception e) {
                 r.setStatus("Server error " + e.getMessage());
