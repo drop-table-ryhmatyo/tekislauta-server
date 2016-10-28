@@ -6,14 +6,12 @@ import fi.tekislauta.db.objects.BoardDao;
 import fi.tekislauta.db.objects.PostDao;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Post;
-import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Result;
 
 import static spark.Spark.*;
 
-import static spark.Spark.get;
-
 import java.util.Map;
+import java.util.Base64;
 
 public class Webserver {
 
@@ -22,6 +20,9 @@ public class Webserver {
     private final Database db;
     private final BoardDao boardDao;
     private final PostDao postDao;
+
+    private final String USER = "Klusse";
+    private final String PW = "juuhelikkas";
 
     public Webserver(int port) {
         this.port = port;
@@ -127,7 +128,7 @@ public class Webserver {
                 p.setIp(req.ip());
                 if (json.get("message") == null) throw new Exception("No message");
                 if (json.get("subject") == null) throw new Exception("No subject");
-                String msg = ((String)json.get("message")).trim();
+                String msg = ((String) json.get("message")).trim();
                 String subj = ((String) json.get("subject")).trim();
                 if (msg.isEmpty() || subj.isEmpty()) throw new Exception("Empty message or subject");
                 p.setSubject(subj);
@@ -158,7 +159,7 @@ public class Webserver {
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
             }
-        
+
             return gson.toJson(r);
         });
 
@@ -182,6 +183,7 @@ public class Webserver {
         delete("api/posts/:id", (req, res) -> {
             Result r = new Result();
             try {
+                if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(postDao.delete(db, req.params("id")));
@@ -194,6 +196,7 @@ public class Webserver {
         delete("api/boards/:id", (req, res) -> {
             Result r = new Result();
             try {
+                if (!isAuthrorized(req.headers("Authorization"))) throw new Exception("Unauthorized");
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(boardDao.delete(db, req.params("id")));
@@ -203,4 +206,11 @@ public class Webserver {
             return gson.toJson(r);
         });
     }
+
+    boolean isAuthrorized(String hdr) {
+        byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
+        String[] credentials = new String(decryptedHeader).split(":");
+        return (credentials[0].equals(USER) && credentials[1].equals(PW));
+    }
 }
+
