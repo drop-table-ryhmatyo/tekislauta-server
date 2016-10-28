@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by Hugo on 14.10.2016.
  */
-public class BoardDao implements DatabaseObject {
+public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
 
     public BoardDao() {
     }
@@ -52,13 +52,14 @@ public class BoardDao implements DatabaseObject {
     }
 
     @Override
-    public Object post(Database db, Object o) throws SQLException {
+    public Object post(Database db, Object o) throws SQLException, ModelValidationException {
+        Board b = (Board) o;
+        validateOnInsert(b);
 
         PreparedStatement statement = db.getConnection().prepareStatement(
                 "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
                 Statement.RETURN_GENERATED_KEYS
         );
-        Board b = (Board) o;
         statement.setString(1, b.getName());
         statement.setString(2, b.getAbbreviation());
         statement.setString(3, b.getDescription());
@@ -68,7 +69,6 @@ public class BoardDao implements DatabaseObject {
 
     @Override
     public Object delete(Database db, String filter) throws SQLException {
-
         Connection con = db.getConnection();
         con.setAutoCommit(false);
 
@@ -87,4 +87,16 @@ public class BoardDao implements DatabaseObject {
         return null;
     }
 
+    @Override
+    protected void validateOnInsert(Board board) throws ModelValidationException {
+        String abbr = board.getAbbreviation();
+        if (abbr == null || abbr.trim().equals(""))
+            throw new ModelValidationException(board, "Abbreviation of a new board cannot be null or empty");
+
+        String name = board.getName();
+        if (name == null || name.trim().equals(""))
+            throw new ModelValidationException(board, "Name of a new board cannot be null or empty");
+
+        // description can be null or empty
+    }
 }

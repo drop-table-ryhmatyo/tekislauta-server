@@ -6,12 +6,11 @@ import fi.tekislauta.models.Post;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.*;
+import java.util.Map.Entry;
 
-public class PostDao implements DatabaseObject {
+public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
 
     public PostDao() {
-
-
     }
 
     @Override
@@ -134,5 +133,26 @@ public class PostDao implements DatabaseObject {
         statement.executeUpdate();
         return null;
 
+    }
+
+    @Override
+    protected void validateOnInsert(Post objectToInsert) throws ModelValidationException {
+        Map<String, String> propsNotNullOrEmpty = new HashMap<>();
+        propsNotNullOrEmpty.put("board abbreviation", objectToInsert.getBoard_abbreviation());
+        propsNotNullOrEmpty.put("ip", objectToInsert.getIp());
+        propsNotNullOrEmpty.put("message", objectToInsert.getMessage());
+
+        // (board_abbreviation, topic_id, ip, post_time, subject, message)
+        // topic_id CAN be null
+        // post_time CAN be null?
+        // subject CAN be null
+        for (Entry<String, String> pair : propsNotNullOrEmpty.entrySet()) {
+            if (pair.getValue() == null || pair.getValue().trim().isEmpty()) {
+                throw new ModelValidationException(
+                    objectToInsert,
+                    "The " + pair.getKey() + " of a post cannot be null or empty!"
+                );
+            }
+        }
     }
 }
