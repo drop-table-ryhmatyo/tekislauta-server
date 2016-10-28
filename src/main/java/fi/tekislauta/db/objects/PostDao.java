@@ -9,9 +9,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
+    private BoardDao boardDao = new BoardDao();
 
-    public PostDao() {
-    }
+    public PostDao() {}
 
     @Override
     public Object fetch(Database db, String filter) throws SQLException {
@@ -33,8 +33,10 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
     }
 
     @Override
-    public List<Object> fetchAll(Database db, String board) throws SQLException {
-
+    public List<Object> fetchAll(Database db, String board) throws Exception {
+        if (boardDao.fetch(db, board) == null) {
+            throw new Exception("Cannot find board " + board);
+        }
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL LIMIT 10");
         statement.setString(1, board);
         ResultSet rs = statement.executeQuery();
@@ -54,7 +56,10 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
         return (List) postList;
     }
 
-    public List<Object> fetchByTopic(Database db, String board, String topic) throws SQLException {
+    public List<Object> fetchByTopic(Database db, String board, String topic) throws Exception {
+        if (boardDao.fetch(db, board) == null) {
+            throw new Exception("Cannot find board " + board);
+        }
         PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND (p.topic_id = ? OR (p.id = ? AND topic_id IS NULL)");
         statement.setString(1, board);
         statement.setInt(2, Integer.parseInt(topic));
@@ -80,6 +85,9 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
     }
 
     public List<Object> fetchPageTopics(Database db, String board, String page) throws Exception {
+        if (boardDao.fetch(db, board) == null) {
+            throw new Exception("Cannot find board " + board);
+        }
         if (page.isEmpty()) page = "1";
         int nPage;
         try {
@@ -110,9 +118,14 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
     }
 
     @Override
-    public Object post(Database db, Object o) throws SQLException {
+    public Object post(Database db, Object o) throws Exception {
         PreparedStatement statement = db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
         Post p = (Post) o;
+
+        if (boardDao.fetch(db, p.getBoard_abbreviation()) == null) {
+            throw new Exception("Cannot find board " + p.getBoard_abbreviation());
+        }
+
         statement.setString(1, p.getBoard_abbreviation());
         if (p.getTopic_id() == null)
             statement.setNull(2, Types.INTEGER);

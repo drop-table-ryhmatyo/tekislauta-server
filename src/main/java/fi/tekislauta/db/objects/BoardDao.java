@@ -20,6 +20,10 @@ public class BoardDao extends ValidatingDao<Board> implements DatabaseObject {
         statement.setString(1, abbreviation);
 
         ResultSet rs = statement.executeQuery();
+
+        if (!rs.next())
+            return null;
+
         Board b = new Board();
 
         b.setName(rs.getString("name"));
