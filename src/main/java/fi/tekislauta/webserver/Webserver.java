@@ -42,7 +42,7 @@ public class Webserver {
                 res.header("Access-Control-Allow-Origin", "*");
                 r.setData(boardDao.fetchAll(db, ""));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -54,7 +54,7 @@ public class Webserver {
                 res.header("Access-Control-Allow-Origin", "*");
                 r.setData(boardDao.fetch(db, req.params("abbreviation")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -66,7 +66,7 @@ public class Webserver {
                 res.header("Access-Control-Allow-Origin", "*");
                 r.setData(postDao.fetchAll(db, req.params("board")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -78,7 +78,7 @@ public class Webserver {
                 res.header("Access-Control-Allow-Origin", "*");
                 r.setData(postDao.fetchPageTopics(db, req.params("board"), req.params("page")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -95,7 +95,7 @@ public class Webserver {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(postDao.fetchByTopic(db, req.params("board"), req.params("topic")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -107,7 +107,7 @@ public class Webserver {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(postDao.fetch(db, req.params("id")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -156,7 +156,7 @@ public class Webserver {
                 p.setPost_time(System.currentTimeMillis());
                 r.setData(postDao.post(db, p));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
         
             return gson.toJson(r);
@@ -174,7 +174,7 @@ public class Webserver {
                 b.setDescription((String) json.get("description"));
                 r.setData(boardDao.post(db, b));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -186,7 +186,7 @@ public class Webserver {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(postDao.delete(db, req.params("id")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
@@ -198,7 +198,7 @@ public class Webserver {
                 res.header("Content-Type", "application/json; charset=utf-8");
                 r.setData(boardDao.delete(db, req.params("id")));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error: " + e.getMessage());
             }
             return gson.toJson(r);
         });
