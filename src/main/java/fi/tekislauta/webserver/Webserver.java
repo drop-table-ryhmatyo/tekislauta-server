@@ -143,7 +143,7 @@ public class Webserver {
             } catch (JsonSyntaxException | ModelValidationException e) {
                 res.status(400);
                 r.setStatus("Error");
-                r.setData("Bad request: " + e.getMessage());
+                r.setData("Malformed request or missing data!");
             } catch (Exception e) {
                 res.status(500);
                 r.setStatus("Error");
