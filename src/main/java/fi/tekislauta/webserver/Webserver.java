@@ -154,7 +154,7 @@ public class Webserver {
                 p.setIp(req.ip());
                 p.setSubject((String) json.get("subject"));
                 p.setMessage((String) json.get("message"));
-                p.setPost_time(System.currentTimeMillis());
+                p.setPost_time(System.currentTimeMillis() / 1000); // post_time is in seconds
                 r.setData(postDao.post(db, p));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
