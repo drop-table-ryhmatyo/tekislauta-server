@@ -212,5 +212,6 @@ public class Webserver {
         String[] credentials = new String(decryptedHeader).split(":");
         return (credentials[0].equals(USER) && credentials[1].equals(PW));
     }
+
 }
 
