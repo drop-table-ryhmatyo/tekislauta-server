@@ -3,7 +3,6 @@ package fi.tekislauta.db.objects;
 import fi.tekislauta.db.Database;
 import fi.tekislauta.models.DatabaseObject;
 import fi.tekislauta.models.Post;
-import fi.tekislauta.models.Result;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class PostDao implements DatabaseObject {
     @Override
     public List<Object> fetchAll(Database db, String board) throws SQLException {
 
-        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL");
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL LIMIT 10");
         statement.setString(1, board);
         ResultSet rs = statement.executeQuery();
 
@@ -62,6 +61,36 @@ public class PostDao implements DatabaseObject {
         statement.setString(1, board);
         statement.setInt(2, Integer.parseInt(topic));
         statement.setInt(3, Integer.parseInt(topic));
+        ResultSet rs = statement.executeQuery();
+
+        ArrayList<Post> postList = new ArrayList<>();
+
+        while (rs.next()) {
+            Post p = new Post();
+
+            p.setId(rs.getInt("id"));
+            p.setTopic_id((Integer) rs.getObject("topic_id"));
+            p.setIp(rs.getString("ip"));
+            p.setPost_time(rs.getInt("post_time"));
+            p.setSubject(rs.getString("subject"));
+            p.setMessage(rs.getString("message"));
+
+            postList.add(p);
+        }
+
+        return (List) postList;
+    }
+
+    public List<Object> fetchPageTopics(Database db, String board, String page) throws Exception {
+        if (page.isEmpty()) page = "1";
+        int nPage;
+        try {
+            nPage = Integer.parseInt(page) <= 0 ? 0 : ((Integer.parseInt(page) - 1) * 10);
+        } catch (Exception e) {
+            throw new Exception("1337");
+        }
+        PreparedStatement statement = db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
+        statement.setString(1, board);
         ResultSet rs = statement.executeQuery();
 
         ArrayList<Post> postList = new ArrayList<>();

@@ -71,12 +71,24 @@ public class Webserver {
             return gson.toJson(r);
         });
 
+        get("/api/boards/:board/posts/:page", (req, res) -> {
+            Result r = new Result();
+            try {
+                res.header("Content-Type", "application/json; charset=utf-8");
+                res.header("Access-Control-Allow-Origin", "*");
+                r.setData(postDao.fetchPageTopics(db, req.params("board"), req.params("page")));
+            } catch (Exception e) {
+                r.setStatus("Server error");
+            }
+            return gson.toJson(r);
+        });
+
         get("/api/jerry", (req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");
             return "\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40 good shit go౦ԁ sHit\uD83D\uDC4C thats ✔ some good\uD83D\uDC4C\uD83D\uDC4Cshit right\uD83D\uDC4C\uD83D\uDC4Cthere\uD83D\uDC4C\uD83D\uDC4C\uD83D\uDC4C right✔there ✔✔if i do ƽaү so my self \uD83D\uDCAF i say so \uD83D\uDCAF thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ\uD83D\uDCAF \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4CНO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ\uD83D\uDC4C \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4C \uD83D\uDCAF \uD83D\uDC4C \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC4C\uD83D\uDC4CGood shit";
         });
 
-        get("/api/boards/:board/posts/:topic", (req, res) -> {
+        get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
             Result r = new Result();
             try {
                 res.header("Access-Control-Allow-Origin", "*");
@@ -123,13 +135,13 @@ public class Webserver {
                 p.setPost_time(System.currentTimeMillis());
                 r.setData(gson.toJson(postDao.post(db, p)));
             } catch (Exception e) {
-                r.setStatus("Server error");
+                r.setStatus("Server error " + e.getMessage());
             }
 
             return gson.toJson(r);
         });
 
-        post("api/boards/:board/posts/:topic", (req, res) -> {
+        post("api/boards/:board/posts/topics/:topic", (req, res) -> {
             Result r = new Result();
             try {
                 res.header("Access-Control-Allow-Origin", "*");
