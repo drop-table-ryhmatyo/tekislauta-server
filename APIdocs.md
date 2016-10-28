@@ -23,7 +23,9 @@ Creates a new board.
 
 `DELETE /boards/:abbreviation` Deletes a board by abbreviation.
 
-`GET /boards/posts/` Gets all topics for board.
+`GET /boards/posts/` Gets the first page of topics for board.
+
+`GET /boards/posts/:page` Gets posts at specified page.
 
 ```
 POST /boards/:board_abbreviation/posts/
@@ -36,7 +38,7 @@ POst body:
 Creates new topic to board `board_abbreviation`
 
 ```
-POST /boards/:board_abbreviation/posts/:post_id
+POST /boards/:board_abbreviation/posts/topics/:post_id
 Post body:
 {
     "subject":"",
@@ -44,7 +46,7 @@ Post body:
 }
 ```
 Creates a reply to `topic_id` which is a post it where `topic_id` is null. 
-calling POST to `/boards/:board_abbreviation/posts/` creates a topic, POST to `/boards/:board_abbreviation/posts/:post_id` creates a reply to a topic.
+calling POST to `/boards/:board_abbreviation/posts/` creates a topic, POST to `/boards/:board_abbreviation/posts/topics/:post_id` creates a reply to a topic.
 
 `DELETE /posts/:post_id` Deletes a post.
 
