@@ -21,8 +21,8 @@ public class Webserver {
     private final BoardDao boardDao;
     private final PostDao postDao;
 
-    private final String USER = "Klusse";
-    private final String PW = "juuhelikkas";
+    private final String USER = System.getenv("USER");
+    private final String PW = System.getenv("PW");
 
     public Webserver(int port) {
         this.port = port;
