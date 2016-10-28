@@ -10,11 +10,11 @@ public class Post {
     private String board_abbrevition;
     private Integer topic_id;
     private String ip;
-    private long post_time;
+    private Integer post_time;
     private String subject;
     private String message;
 
-    public Post(int id, String board_id, Integer topic_id, String ip, int post_time, String subject, String message) {
+    public Post(int id, String board_id, Integer topic_id, String ip, Integer post_time, String subject, String message) {
         this.id = id;
         this.board_abbrevition = board_id;
         this.topic_id = topic_id;
@@ -66,11 +66,11 @@ public class Post {
         }
     }
 
-    public long getPost_time() {
+    public Integer getPost_time() {
         return post_time;
     }
 
-    public void setPost_time(long post_time) {
+    public void setPost_time(Integer post_time) {
         this.post_time = post_time;
     }
 

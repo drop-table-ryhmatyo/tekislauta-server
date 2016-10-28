@@ -119,6 +119,7 @@ public class PostDao extends ValidatingDao<Post> implements DatabaseObject {
         else
             statement.setInt(2, p.getTopic_id());
         statement.setString(3, p.getIp());
+        statement.setInt(4, p.getPost_time());
         statement.setString(5, p.getSubject());
         statement.setString(6, p.getMessage());
 

@@ -133,7 +133,7 @@ public class Webserver {
                 if (msg.isEmpty() || subj.isEmpty()) throw new Exception("Empty message or subject");
                 p.setSubject(subj);
                 p.setMessage(msg);
-                p.setPost_time(System.currentTimeMillis() / 1000); // don't need ms accuracy, s accuracy is fine
+                p.setPost_time(getUnixTimestamp()); // don't need ms accuracy, s accuracy is fine
                 r.setData(gson.toJson(postDao.post(db, p)));
             } catch (Exception e) {
                 r.setStatus("Server error " + e.getMessage());
@@ -154,7 +154,7 @@ public class Webserver {
                 p.setIp(req.ip());
                 p.setSubject((String) json.get("subject"));
                 p.setMessage((String) json.get("message"));
-                p.setPost_time(System.currentTimeMillis() / 1000); // post_time is in seconds
+                p.setPost_time(getUnixTimestamp());
                 r.setData(postDao.post(db, p));
             } catch (Exception e) {
                 r.setStatus("Server error: " + e.getMessage());
@@ -213,5 +213,8 @@ public class Webserver {
         return (credentials[0].equals(USER) && credentials[1].equals(PW));
     }
 
+    private int getUnixTimestamp() {
+        return (int)(System.currentTimeMillis() / 1000); // we deal with seconds around here
+    }
 }
 
