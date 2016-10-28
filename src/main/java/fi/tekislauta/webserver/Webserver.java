@@ -40,6 +40,10 @@ public class Webserver {
     public void listen() {
         port(this.port);
 
+        before((req, res) -> {
+            res.header("Content-Type", "application/json; charset=utf-8");
+        });
+
         exception(ModelValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
             Result r = new Result();
@@ -66,33 +70,25 @@ public class Webserver {
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
-
             r.setData(boardDao.findAll(""));
             return gson.toJson(r);
         });
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
-
             r.setData(boardDao.find(req.params("abbreviation")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
-
             r.setData(postDao.findAll(req.params("board")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
-
             r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
             return gson.toJson(r);
         });
@@ -103,14 +99,12 @@ public class Webserver {
         });
 
         get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
             r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
             return gson.toJson(r);
         });
 
         get("/api/posts/:id", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
             Result r = new Result();
             r.setData(postDao.find(req.params("id")));
             return gson.toJson(r);
@@ -118,8 +112,6 @@ public class Webserver {
 
         post("api/boards/:board/posts/", (req, res) -> {
             // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
-            res.header("Content-Type", "application/json; charset=utf-8");
-
             Result result = new Result();
             Post post = gson.fromJson(req.body(), Post.class); // should parse subject and message
             if (post.getTopic_id() != null) {
@@ -139,8 +131,6 @@ public class Webserver {
         }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
-
             Result r = new Result();
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
@@ -156,8 +146,6 @@ public class Webserver {
         });
 
         post("/api/boards/", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
-
             Result r = new Result();
             Map json = gson.fromJson(req.body(), Map.class);
             Board b = new Board();
@@ -169,8 +157,6 @@ public class Webserver {
         });
 
         delete("api/posts/:id", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
-
             Result r = new Result();
             if (!isAuthrorized(req.headers("Authorization"))) {
                 res.status(401); // unauthorized
@@ -181,8 +167,6 @@ public class Webserver {
         });
 
         delete("api/boards/:id", (req, res) -> {
-            res.header("Content-Type", "application/json; charset=utf-8");
-
             Result r = new Result();
             if (!isAuthrorized(req.headers("Authorization"))) {
                 res.status(401); // unauthorized
