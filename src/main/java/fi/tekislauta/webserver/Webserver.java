@@ -66,61 +66,58 @@ public class Webserver {
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
-            Result r = new Result();
             res.header("Content-Type", "application/json; charset=utf-8");
-            res.header("Access-Control-Allow-Origin", "*");
+            Result r = new Result();
+
             r.setData(boardDao.findAll(""));
             return gson.toJson(r);
         });
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            Result r = new Result();
             res.header("Content-Type", "application/json; charset=utf-8");
-            res.header("Access-Control-Allow-Origin", "*");
+            Result r = new Result();
+
             r.setData(boardDao.find(req.params("abbreviation")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
-            Result r = new Result();
             res.header("Content-Type", "application/json; charset=utf-8");
-            res.header("Access-Control-Allow-Origin", "*");
+            Result r = new Result();
+
             r.setData(postDao.findAll(req.params("board")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
-            Result r = new Result();
             res.header("Content-Type", "application/json; charset=utf-8");
-            res.header("Access-Control-Allow-Origin", "*");
+            Result r = new Result();
+
             r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
             return gson.toJson(r);
         });
 
         get("/api/jerry", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
+
             return "\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40 good shit go౦ԁ sHit\uD83D\uDC4C thats ✔ some good\uD83D\uDC4C\uD83D\uDC4Cshit right\uD83D\uDC4C\uD83D\uDC4Cthere\uD83D\uDC4C\uD83D\uDC4C\uD83D\uDC4C right✔there ✔✔if i do ƽaү so my self \uD83D\uDCAF i say so \uD83D\uDCAF thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ\uD83D\uDCAF \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4CНO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ\uD83D\uDC4C \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4C \uD83D\uDCAF \uD83D\uDC4C \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC4C\uD83D\uDC4CGood shit";
         });
 
         get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
-            Result r = new Result();
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
+            Result r = new Result();
             r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
             return gson.toJson(r);
         });
 
         get("/api/posts/:id", (req, res) -> {
-            Result r = new Result();
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
+            Result r = new Result();
             r.setData(postDao.find(req.params("id")));
             return gson.toJson(r);
         });
 
         post("api/boards/:board/posts/", (req, res) -> {
             // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
 
             Result result = new Result();
@@ -142,7 +139,6 @@ public class Webserver {
         }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
 
             Result r = new Result();
@@ -160,7 +156,6 @@ public class Webserver {
         });
 
         post("/api/boards/", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
 
             Result r = new Result();
@@ -174,7 +169,6 @@ public class Webserver {
         });
 
         delete("api/posts/:id", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
 
             Result r = new Result();
@@ -187,7 +181,6 @@ public class Webserver {
         });
 
         delete("api/boards/:id", (req, res) -> {
-            res.header("Access-Control-Allow-Origin", "*");
             res.header("Content-Type", "application/json; charset=utf-8");
 
             Result r = new Result();
