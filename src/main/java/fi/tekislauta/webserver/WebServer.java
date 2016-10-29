@@ -163,8 +163,9 @@ public class WebServer {
         return (int)(System.currentTimeMillis() / 1000); // we deal with seconds around here
     }
 
-    private void dumpRequestException(Request request, Exception e) {
+    private static void dumpRequestException(Request request, Exception e) {
         System.err.println("Error!");
+        System.err.println("Requested path: " + request.pathInfo());
         System.err.printf("Request body:%n%s%n", request.body());
         System.err.print("Exception: ");
         e.printStackTrace(new PrintStream(System.err));
