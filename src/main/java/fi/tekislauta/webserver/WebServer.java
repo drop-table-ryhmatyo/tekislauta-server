@@ -44,7 +44,6 @@ public class WebServer {
             res.header("Content-Type", "application/json; charset=utf-8");
         });
 
-
         exception(ModelValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
             Result r = Result.error("Malformed request or missing data! " + exception.getMessage());
@@ -159,7 +158,7 @@ public class WebServer {
     }
 
     private static String getDbUrl() {
-        final String defaultUrl = "jdbc:sqlite:tekislauta.db";
+        final String defaultUrl = "jdbc:sqlite:DatabaseFile";//"jdbc:sqlite:tekislauta.db";
         String url = System.getenv("DATABASE_URL");
         return url == null ? defaultUrl : url;
     }
