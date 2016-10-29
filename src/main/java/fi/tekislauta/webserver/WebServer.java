@@ -158,14 +158,16 @@ public class WebServer {
 
         delete("api/posts/:id", (req, res) -> {
             Result r = new Result();
+
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
                 r.setStatus("Unauthorized");
+            } else {
+                postDao.delete(req.params("id"));
+                r.setStatus("Success");
             }
 
-            postDao.delete(req.params("id"));
-            r.setStatus("Success");
             return gson.toJson(r);
         });
 
@@ -175,10 +177,11 @@ public class WebServer {
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
                 r.setStatus("Unauthorized");
+            } else {
+                boardDao.delete(req.params("id"));
+                r.setStatus("Success");
             }
 
-            boardDao.delete(req.params("id"));
-            r.setStatus("Success");
             return gson.toJson(r);
         });
     }
