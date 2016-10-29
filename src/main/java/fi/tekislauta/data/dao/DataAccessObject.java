@@ -1,8 +1,5 @@
-package fi.tekislauta.db.objects;
+package fi.tekislauta.data.dao;
 
-import fi.tekislauta.db.Database;
-
-import java.sql.SQLException;
 import java.util.List;
 
 public interface DataAccessObject<TModel, TKey> {

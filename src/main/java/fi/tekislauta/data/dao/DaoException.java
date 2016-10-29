@@ -1,4 +1,4 @@
-package fi.tekislauta.db.objects;
+package fi.tekislauta.data.dao;
 
 /**
  * Created by Jalle on 29.10.2016.

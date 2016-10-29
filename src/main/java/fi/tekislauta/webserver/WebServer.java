@@ -2,11 +2,11 @@ package fi.tekislauta.webserver;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import fi.tekislauta.db.Database;
-import fi.tekislauta.db.objects.BoardDao;
-import fi.tekislauta.db.objects.DaoException;
-import fi.tekislauta.db.objects.ModelValidationException;
-import fi.tekislauta.db.objects.PostDao;
+import fi.tekislauta.data.Database;
+import fi.tekislauta.data.dao.BoardDao;
+import fi.tekislauta.data.dao.DaoException;
+import fi.tekislauta.data.dao.ModelValidationException;
+import fi.tekislauta.data.dao.PostDao;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Post;
 import fi.tekislauta.models.Result;
@@ -16,7 +16,6 @@ import static spark.Spark.*;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Base64;
 
 public class WebServer {
