@@ -138,7 +138,7 @@ public class WebServer {
 
         delete("api/posts/:id", (req, res) -> {
             String authHeader = req.headers("Authorization");
-            if (authHeader == null || !isAuthrorized(authHeader)) {
+            if (authHeader == null || !isAuthorized(authHeader)) {
                 res.status(401); // unauthorized
                 return Result.unauthorized(null);
             }
@@ -149,7 +149,7 @@ public class WebServer {
 
         delete("api/boards/:id", (req, res) -> {
             String authHeader = req.headers("Authorization");
-            if (authHeader == null || !isAuthrorized(authHeader)) {
+            if (authHeader == null || !isAuthorized(authHeader)) {
                 res.status(401); // unauthorized
                 return Result.unauthorized(null);
             }
@@ -176,6 +176,12 @@ public class WebServer {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private boolean isAuthorized(String hdr) {
+        byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
+        String[] credentials = new String(decryptedHeader).split(":");
+        return (credentials[0].equals(USER) && credentials[1].equals(PW));
     }
 }
 
