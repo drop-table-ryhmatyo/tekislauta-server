@@ -158,7 +158,7 @@ public class WebServer {
     }
 
     private static String getDbUrl() {
-        final String defaultUrl = "jdbc:sqlite:DatabaseFile";//"jdbc:sqlite:tekislauta.db";
+        final String defaultUrl = "jdbc:sqlite:db:tekislauta.db";
         String url = System.getenv("DATABASE_URL");
         return url == null ? defaultUrl : url;
     }
