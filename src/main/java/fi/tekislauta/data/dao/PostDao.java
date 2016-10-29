@@ -186,6 +186,9 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
 
     @Override
     protected void validateOnInsert(Post objectToInsert) throws ModelValidationException {
+        if (objectToInsert == null)
+            throw new ModelValidationException(objectToInsert, "Post cannot be null!");
+
         if (objectToInsert.getPost_time() == null)
             throw new ModelValidationException(objectToInsert, "The post time of a post cannot be null!");
         
