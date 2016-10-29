@@ -1,4 +1,4 @@
-package fi.tekislauta.db;
+package fi.tekislauta.data;
 
 import java.io.*;
 import java.sql.*;
