@@ -40,9 +40,11 @@ public class WebServer {
     public void listen() {
         port(this.port);
 
+
         before((req, res) -> {
             res.header("Content-Type", "application/json; charset=utf-8");
         });
+
 
         exception(ModelValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
@@ -62,6 +64,7 @@ public class WebServer {
             Result r = Result.error("A server error has occurred.");
             res.body(gson.toJson(r));
         });
+
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
@@ -119,23 +122,16 @@ public class WebServer {
         }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
-            Map json = gson.fromJson(req.body(), Map.class);
-            Post p = new Post();
+            Post p = gson.fromJson(req.body(), Post.class); // message and optionally subject should be there now
             p.setBoard_abbrevition(req.params("board"));
-            p.setTopic_id(Integer.parseInt(req.params("topic")));
+            p.setTopic_id(tryParseInteger(req.params("topic")));
             p.setIp(req.ip());
-            p.setSubject((String) json.get("subject"));
-            p.setMessage((String) json.get("message"));
             p.setPost_time(getUnixTimestamp());
-            return Result.success(postDao.post(p));
+            return Result.success(postDao.post(p)); // doesn't seem to return ID of created post
         }, gson::toJson);
 
         post("/api/boards/", (req, res) -> {
-            Map json = gson.fromJson(req.body(), Map.class);
-            Board b = new Board();
-            b.setName((String) json.get("name"));
-            b.setAbbreviation((String) json.get("abbreviation"));
-            b.setDescription((String) json.get("description"));
+            Board b = gson.fromJson(req.body(), Board.class);
             return Result.success(boardDao.post(b));
         }, gson::toJson);
 
@@ -163,13 +159,7 @@ public class WebServer {
         }, gson::toJson);
     }
 
-    private boolean isAuthrorized(String hdr) {
-        byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
-        String[] credentials = new String(decryptedHeader).split(":");
-        return (credentials[0].equals(USER) && credentials[1].equals(PW));
-    }
-
-    private int getUnixTimestamp() {
+    private static int getUnixTimestamp() {
         return (int)(System.currentTimeMillis() / 1000); // we deal with seconds around here
     }
 
@@ -178,6 +168,14 @@ public class WebServer {
         System.err.printf("Request body:%n%s%n", request.body());
         System.err.print("Exception: ");
         e.printStackTrace(new PrintStream(System.err));
+    }
+
+    private static Integer tryParseInteger(String s) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }
 
