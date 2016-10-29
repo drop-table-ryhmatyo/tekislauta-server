@@ -44,7 +44,6 @@ public class WebServer {
             res.header("Content-Type", "application/json; charset=utf-8");
         });
 
-
         exception(ModelValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
             Result r = Result.error("Malformed request or missing data! " + exception.getMessage());
