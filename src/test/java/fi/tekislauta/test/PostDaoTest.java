@@ -1,4 +1,4 @@
-package fi.tekislauta;
+package fi.tekislauta.test;
 
 import fi.tekislauta.data.Database;
 import fi.tekislauta.data.dao.PostDao;
