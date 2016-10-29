@@ -31,7 +31,7 @@ public class WebServer {
     public WebServer(int port) {
         this.port = port;
         this.gson = new Gson();
-        Database db = new Database();
+        Database db = new Database(getDbUrl());
         this.boardDao = new BoardDao(db);
         this.postDao = new PostDao(db);
     }
@@ -156,6 +156,12 @@ public class WebServer {
             boardDao.delete(req.params("id"));
             return Result.success(null);
         }, gson::toJson);
+    }
+
+    private static String getDbUrl() {
+        final String defaultUrl = "jdbc:sqlite:tekislauta.db";
+        String url = System.getenv("DATABASE_URL");
+        return url == null ? defaultUrl : url;
     }
 
     private static int getUnixTimestamp() {
