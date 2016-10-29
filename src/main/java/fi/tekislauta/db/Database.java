@@ -4,8 +4,8 @@ import java.io.*;
 import java.sql.*;
 
 public class Database {
-    private final String SCHEMA = "PRAGMA foreign_keys = ON;CREATE TABLE Board( name varchar(64) NOT NULL, abbreviation varchar(4) NOT NULL, description varchar(1024) NULL, PRIMARY KEY (abbreviation));CREATE TABLE Post( id integer, board_abbreviation varchar(4) NOT NULL, topic_id integer NULL, ip varchar(16) NOT NULL, post_time integer(4) NOT NULL DEFAULT (strftime('%s', 'now')), subject varchar(128) NULL, message text NOT NULL, PRIMARY KEY (id), FOREIGN KEY (board_abbreviation) REFERENCES Board(abbreviation), FOREIGN KEY (topic_id) REFERENCES Post(id));";
-    private final String DB_PATH = "tekislauta.db";
+    private final String SCHEMA_PATH = "/db/Schema.sql";
+    private final String DB_PATH = "db:DatabaseFile";
     private Connection _dbConn = null;
     private Statement _dbStmt = null;
 
@@ -33,7 +33,11 @@ public class Database {
 
                 if (!boardRes.next() || !postRes.next()) {
                     // Tables do not exist, so let's create them!
-                    this._dbStmt.executeUpdate(SCHEMA); // Reading the SCHEMA_PATH file.
+                    try {
+                        this._dbStmt.executeUpdate(readSchema()); // Reading the SCHEMA_PATH file.
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
 
             } catch (SQLException e) {
@@ -44,7 +48,7 @@ public class Database {
 
     // TODO: Read schema from file
     String readSchema() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(this.getClass().getResource("").getFile()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream(SCHEMA_PATH)));
         String res = "";
         String line;
         // Loop every line
@@ -59,5 +63,4 @@ public class Database {
         return this._dbConn;
     }
 }
-
 
