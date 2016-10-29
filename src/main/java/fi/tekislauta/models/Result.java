@@ -4,24 +4,42 @@ package fi.tekislauta.models;
  * Created by Hugo on 14.10.2016.
  */
 public class Result {
-    private String status = "Success";
-    public Object data = null;
+    private static final String SUCCESS = "Success";
+    private static final String ERROR = "Error";
+    private static final String UNAUTHORIZED = "Unauthorized";
 
-    public Result() {}
+    private String status = null;
+    private Object data = null;
+
+    protected Result() {
+        // No public constructor declared so nobody can create `new`
+        // instances without using our static methods below. Or, by inheriting.
+    }
+
+    public static Result success(Object data) {
+        return create(SUCCESS, data);
+    }
+
+    public static Result error(Object data) {
+        return create(ERROR, data);
+    }
+
+    public static Result unauthorized(Object data) {
+        return create(UNAUTHORIZED, data);
+    }
+
+    private static Result create(String status, Object data) {
+        Result r = new Result();
+        r.status = status;
+        r.data = data;
+        return r;
+    }
 
     public Object getData() {
         return data;
     }
 
-    public void setData(Object o) {
-        this.data = o;
-    }
-
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

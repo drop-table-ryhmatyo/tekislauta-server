@@ -46,50 +46,41 @@ public class WebServer {
 
         exception(ModelValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
-            Result r = new Result();
-            r.setStatus("Error");
-            r.setData("Malformed request or missing data! " + exception.getMessage());
+            Result r = Result.error("Malformed request or missing data! " + exception.getMessage());
             res.body(gson.toJson(r));
         });
 
         exception(JsonSyntaxException.class, (ex, req, res) -> {
             res.status(400); // "Bad request"
-            Result r = new Result();
-            r.setStatus("Error");
-            r.setData("Malformed request! Please check your JSON syntax!");
+            Result r = Result.error("Malformed request! Please check your JSON syntax!");
+            res.body(gson.toJson(r));
         });
 
         exception(DaoException.class, (exception, req, res) -> {
-            res.status(500); // "Internal server error"
-            Result r = new Result();
-            r.setStatus("Error");
-            r.setData("A server error has occurred.");
             dumpRequestException(req, exception);
+            res.status(500); // "Internal server error"
+            Result r = Result.error("A server error has occurred.");
             res.body(gson.toJson(r));
         });
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
-            Result r = new Result();
-            r.setData(boardDao.findAll(""));
+            Result r = Result.success(boardDao.findAll(""));
             return gson.toJson(r);
         });
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            Result r = new Result();
-            r.setData(boardDao.find(req.params("abbreviation")));
+            Result r = Result.success(boardDao.find(req.params("abbreviation")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/", (req, res) -> {
-            Result r = new Result();
-            r.setData(postDao.findAll(req.params("board")));
+            Result r = Result.success(postDao.findAll(req.params("board")));
             return gson.toJson(r);
         });
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
-            Result r = new Result();
-            r.setData(postDao.findPageTopics(req.params("board"), req.params("page")));
+            Result r = Result.success(postDao.findPageTopics(req.params("board"), req.params("page")));
             return gson.toJson(r);
         });
 
@@ -99,39 +90,35 @@ public class WebServer {
         });
 
         get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
-            Result r = new Result();
-            r.setData(postDao.findByTopic(req.params("board"), req.params("topic")));
+            Result r = Result.success(postDao.findByTopic(req.params("board"), req.params("topic")));
             return gson.toJson(r);
         });
 
         get("/api/posts/:id", (req, res) -> {
-            Result r = new Result();
-            r.setData(postDao.find(req.params("id")));
+            Result r = Result.success(postDao.find(req.params("id")));
             return gson.toJson(r);
         });
 
         post("api/boards/:board/posts/", (req, res) -> {
             // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
-            Result result = new Result();
+
             Post post = gson.fromJson(req.body(), Post.class); // should parse subject and message
             if (post.getTopic_id() != null) {
                 // This endpoint only creates new topics. No replies. Nada. noty.
                 res.status(400);
-                result.setStatus("Error");
-                result.setData("This endpoint creates new topics. Topic replies go to POST api/boards/:board/posts/topics/:topic");
-                return result;
+                return Result.error(
+                        "This endpoint creates new topics." +
+                        "Topic replies go to POST api/boards/:board/posts/topics/:topic"
+                );
             }
 
             post.setBoard_abbrevition(req.params("board"));
             post.setIp(req.ip());
             post.setPost_time(getUnixTimestamp());
-            result.setData(postDao.post(post));
-
-            return result;
+            return Result.success(postDao.post(post));
         }, gson::toJson);
 
         post("api/boards/:board/posts/topics/:topic", (req, res) -> {
-            Result r = new Result();
             Map json = gson.fromJson(req.body(), Map.class);
             Post p = new Post();
             p.setBoard_abbrevition(req.params("board"));
@@ -140,46 +127,45 @@ public class WebServer {
             p.setSubject((String) json.get("subject"));
             p.setMessage((String) json.get("message"));
             p.setPost_time(getUnixTimestamp());
-            r.setData(postDao.post(p));
-
+            Result r = Result.success(postDao.post(p));
             return gson.toJson(r);
         });
 
         post("/api/boards/", (req, res) -> {
-            Result r = new Result();
             Map json = gson.fromJson(req.body(), Map.class);
             Board b = new Board();
             b.setName((String) json.get("name"));
             b.setAbbreviation((String) json.get("abbreviation"));
             b.setDescription((String) json.get("description"));
-            r.setData(boardDao.post(b));
+            Result r = Result.success(boardDao.post(b));
             return gson.toJson(r);
         });
 
         delete("api/posts/:id", (req, res) -> {
-            Result r = new Result();
+            Result r;
 
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
-                r.setStatus("Unauthorized");
+                r = Result.unauthorized(null);
             } else {
                 postDao.delete(req.params("id"));
-                r.setStatus("Success");
+                r = Result.success(null);
             }
 
             return gson.toJson(r);
         });
 
         delete("api/boards/:id", (req, res) -> {
-            Result r = new Result();
+            Result r;
+
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
-                r.setStatus("Unauthorized");
+                r = Result.unauthorized(null);
             } else {
                 boardDao.delete(req.params("id"));
-                r.setStatus("Success");
+                r = Result.success(null);
             }
 
             return gson.toJson(r);
