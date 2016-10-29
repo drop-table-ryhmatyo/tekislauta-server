@@ -15,6 +15,7 @@ import spark.Request;
 import static spark.Spark.*;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Base64;
 
@@ -22,7 +23,6 @@ public class WebServer {
 
     private final int port;
     private final Gson gson;
-    //private final Database db;
     private final BoardDao boardDao;
     private final PostDao postDao;
 
@@ -65,39 +65,35 @@ public class WebServer {
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
-            Result r = Result.success(boardDao.findAll(""));
-            return gson.toJson(r);
-        });
+            return Result.success(boardDao.findAll(""));
+        }, gson::toJson);
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            Result r = Result.success(boardDao.find(req.params("abbreviation")));
-            return gson.toJson(r);
-        });
+            return Result.success(boardDao.find(req.params("abbreviation")));
+        }, gson::toJson);
 
         get("/api/boards/:board/posts/", (req, res) -> {
-            Result r = Result.success(postDao.findAll(req.params("board")));
-            return gson.toJson(r);
-        });
+            return Result.success(postDao.findAll(req.params("board")));
+        }, gson::toJson);
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
-            Result r = Result.success(postDao.findPageTopics(req.params("board"), req.params("page")));
-            return gson.toJson(r);
-        });
+            List<Post> posts = postDao.findPageTopics(req.params("board"), req.params("page"));
+            return Result.success(posts);
+        }, gson::toJson);
 
         get("/api/jerry", (req, res) -> {
-
-            return "\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40 good shit go౦ԁ sHit\uD83D\uDC4C thats ✔ some good\uD83D\uDC4C\uD83D\uDC4Cshit right\uD83D\uDC4C\uD83D\uDC4Cthere\uD83D\uDC4C\uD83D\uDC4C\uD83D\uDC4C right✔there ✔✔if i do ƽaү so my self \uD83D\uDCAF i say so \uD83D\uDCAF thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ\uD83D\uDCAF \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4CНO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ\uD83D\uDC4C \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4C \uD83D\uDCAF \uD83D\uDC4C \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC4C\uD83D\uDC4CGood shit";
-        });
+            return Result.success("\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40\uD83D\uDC4C\uD83D\uDC40 good shit go౦ԁ sHit\uD83D\uDC4C thats ✔ some good\uD83D\uDC4C\uD83D\uDC4Cshit right\uD83D\uDC4C\uD83D\uDC4Cthere\uD83D\uDC4C\uD83D\uDC4C\uD83D\uDC4C right✔there ✔✔if i do ƽaү so my self \uD83D\uDCAF i say so \uD83D\uDCAF thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ\uD83D\uDCAF \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4CНO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ\uD83D\uDC4C \uD83D\uDC4C\uD83D\uDC4C \uD83D\uDC4C \uD83D\uDCAF \uD83D\uDC4C \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC40 \uD83D\uDC4C\uD83D\uDC4CGood shit");
+        }, gson::toJson);
 
         get("/api/boards/:board/posts/topics/:topic", (req, res) -> {
-            Result r = Result.success(postDao.findByTopic(req.params("board"), req.params("topic")));
-            return gson.toJson(r);
-        });
+            List<Post> posts = postDao.findByTopic(req.params("board"), req.params("topic"));
+            return Result.success(posts);
+        }, gson::toJson);
 
         get("/api/posts/:id", (req, res) -> {
-            Result r = Result.success(postDao.find(req.params("id")));
-            return gson.toJson(r);
-        });
+            return Result.success(postDao.find(req.params("id")));
+        }, gson::toJson);
+
 
         post("api/boards/:board/posts/", (req, res) -> {
             // This endpoint creates new topics. Responses go to POST api/boards/:board/posts/topics/:topic
@@ -107,8 +103,8 @@ public class WebServer {
                 // This endpoint only creates new topics. No replies. Nada. noty.
                 res.status(400);
                 return Result.error(
-                        "This endpoint creates new topics." +
-                        "Topic replies go to POST api/boards/:board/posts/topics/:topic"
+                    "This endpoint creates new topics." +
+                    "Topic replies go to POST api/boards/:board/posts/topics/:topic"
                 );
             }
 
@@ -127,9 +123,8 @@ public class WebServer {
             p.setSubject((String) json.get("subject"));
             p.setMessage((String) json.get("message"));
             p.setPost_time(getUnixTimestamp());
-            Result r = Result.success(postDao.post(p));
-            return gson.toJson(r);
-        });
+            return Result.success(postDao.post(p));
+        }, gson::toJson);
 
         post("/api/boards/", (req, res) -> {
             Map json = gson.fromJson(req.body(), Map.class);
@@ -137,39 +132,31 @@ public class WebServer {
             b.setName((String) json.get("name"));
             b.setAbbreviation((String) json.get("abbreviation"));
             b.setDescription((String) json.get("description"));
-            Result r = Result.success(boardDao.post(b));
-            return gson.toJson(r);
-        });
+            return Result.success(boardDao.post(b));
+        }, gson::toJson);
+
 
         delete("api/posts/:id", (req, res) -> {
-            Result r;
-
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
-                r = Result.unauthorized(null);
-            } else {
-                postDao.delete(req.params("id"));
-                r = Result.success(null);
+                return Result.unauthorized(null);
             }
 
-            return gson.toJson(r);
-        });
+            postDao.delete(req.params("id"));
+            return Result.success(null);
+        }, gson::toJson);
 
         delete("api/boards/:id", (req, res) -> {
-            Result r;
-
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
-                r = Result.unauthorized(null);
-            } else {
-                boardDao.delete(req.params("id"));
-                r = Result.success(null);
+                return Result.unauthorized(null);
             }
 
-            return gson.toJson(r);
-        });
+            boardDao.delete(req.params("id"));
+            return Result.success(null);
+        }, gson::toJson);
     }
 
     private boolean isAuthrorized(String hdr) {
