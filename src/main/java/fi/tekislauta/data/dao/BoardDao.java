@@ -121,6 +121,9 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
 
     @Override
     protected void validateOnInsert(Board board) throws ModelValidationException {
+        if (board == null)
+            throw new ModelValidationException(board, "Board cannot be null!");
+
         String abbr = board.getAbbreviation();
         if (abbr == null || abbr.trim().equals(""))
             throw new ModelValidationException(board, "Abbreviation of a new board cannot be null or empty");
