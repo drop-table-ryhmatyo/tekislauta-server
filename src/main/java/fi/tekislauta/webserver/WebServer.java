@@ -18,7 +18,7 @@ import java.io.PrintStream;
 import java.util.Map;
 import java.util.Base64;
 
-public class Webserver {
+public class WebServer {
 
     private final int port;
     private final Gson gson;
@@ -29,7 +29,7 @@ public class Webserver {
     private final String USER = System.getenv("USER");
     private final String PW = System.getenv("PW");
 
-    public Webserver(int port) {
+    public WebServer(int port) {
         this.port = port;
         this.gson = new Gson();
         Database db = new Database();
@@ -158,21 +158,27 @@ public class Webserver {
 
         delete("api/posts/:id", (req, res) -> {
             Result r = new Result();
-            if (!isAuthrorized(req.headers("Authorization"))) {
+            String authHeader = req.headers("Authorization");
+            if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
                 r.setStatus("Unauthorized");
             }
+
             postDao.delete(req.params("id"));
+            r.setStatus("Success");
             return gson.toJson(r);
         });
 
         delete("api/boards/:id", (req, res) -> {
             Result r = new Result();
-            if (!isAuthrorized(req.headers("Authorization"))) {
+            String authHeader = req.headers("Authorization");
+            if (authHeader == null || !isAuthrorized(authHeader)) {
                 res.status(401); // unauthorized
                 r.setStatus("Unauthorized");
             }
+
             boardDao.delete(req.params("id"));
+            r.setStatus("Success");
             return gson.toJson(r);
         });
     }
