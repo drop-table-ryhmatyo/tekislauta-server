@@ -127,7 +127,7 @@ public class WebServer {
             p.setTopic_id(tryParseInteger(req.params("topic")));
             p.setIp(req.ip());
             p.setPost_time(getUnixTimestamp());
-            return Result.success(postDao.post(p)); // doesn't seem to return ID of created post
+            return Result.success(postDao.post(p));
         }, gson::toJson);
 
         post("/api/boards/", (req, res) -> {
