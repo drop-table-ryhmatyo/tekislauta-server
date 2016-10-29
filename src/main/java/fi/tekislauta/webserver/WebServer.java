@@ -69,7 +69,11 @@ public class WebServer {
         }, gson::toJson);
 
         get("/api/boards/:abbreviation", (req, res) -> {
-            return Result.success(boardDao.find(req.params("abbreviation")));
+            Board b = boardDao.find(req.params("abbreviation"));
+            if (b == null)
+                return Result.error("Board \"" + req.params("abbreviation") + "\" not found!");
+            else
+                return Result.success(b);
         }, gson::toJson);
 
         get("/api/boards/:board/posts/", (req, res) -> {
