@@ -144,7 +144,10 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         validateOnInsert(p);
 
         try {
-            PreparedStatement statement = this.db.getConnection().prepareStatement("INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = this.db.getConnection().prepareStatement(
+                "INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)",
+                Statement.RETURN_GENERATED_KEYS
+            );
 
             if (boardDao.find(p.getBoard_abbreviation()) == null) {
                 throw new DaoException("Cannot find board " + p.getBoard_abbreviation());
@@ -159,8 +162,11 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             statement.setInt(4, p.getPost_time());
             statement.setString(5, p.getSubject());
             statement.setString(6, p.getMessage());
-
             statement.executeUpdate();
+
+            ResultSet rs = statement.getGeneratedKeys();
+            rs.next(); // Statement.RETURN_GENERATED_KEYS returns the created id
+            p.setId(rs.getInt(1));
             return p;
         } catch (SQLException ex) {
             throw new DaoException(ex);
