@@ -67,10 +67,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         validateOnInsert(b);
 
         try {
-            PreparedStatement statement = this.database.getConnection().prepareStatement(
-                    "INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
+            PreparedStatement statement = this.database.getConnection().prepareStatement("INSERT INTO Board (name, abbreviation, description) VALUES (?,?,?)");
             statement.setString(1, b.getName());
             statement.setString(2, b.getAbbreviation());
             statement.setString(3, b.getDescription());
