@@ -12,27 +12,24 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class BoardDaoTest {
-    private static final String DATABASE_FILE = "./test.db";
+    // use an SQLite memory db for tests
+    private static final String DATABASE_URL = "jdbc:sqlite::memory:";
     private Database db;
     private PostDao dao;
 
     @Before
     public void setup() {
-        deleteIfExists(DATABASE_FILE);
-        this.db = new Database("jdbc:sqlite:" + DATABASE_FILE);
+        this.db = new Database(DATABASE_URL);
         this.dao = new PostDao(db);
     }
 
     @After
     public void teardown() {
-        deleteIfExists(DATABASE_FILE);
     }
 
     @Test
@@ -68,9 +65,45 @@ public class BoardDaoTest {
         assertEquals(name, found.getName());
     }
 
-    private static void deleteIfExists(String file) {
-        File f = new File(file);
-        if (f.exists())
-            f.delete();
+    @Test
+    public void createdBoardFoundAmongAll() throws Exception {
+        String abbr = "b", name = "Random";
+        Board b = new Board();
+        b.setAbbreviation(abbr);
+        b.setName(name);
+
+        BoardDao dao = new BoardDao(this.db);
+        dao.post(b);
+
+        List<Board> boards = dao.findAll("");
+        for (Board board : boards) {
+            if (abbr.equals(board.getAbbreviation())
+                && name.equals(board.getName())) {
+                return;
+            }
+        }
+        fail("Board not found!");
+    }
+
+    @Test(expected=ModelValidationException.class)
+    public void nullBoardThrowsOnPost() throws Exception {
+        BoardDao dao = new BoardDao(this.db);
+        dao.post(null);
+    }
+
+    @Test(expected=ModelValidationException.class)
+    public void emptyBoardObjectThrowsOnPost() throws Exception {
+        BoardDao dao = new BoardDao(this.db);
+        dao.post(new Board());
+    }
+
+    @Test
+    public void deletedBoardIsDeleted() throws Exception {
+        Board b = new Board();
+        b.setAbbreviation("tv");
+        b.setName("Television");
+        BoardDao dao = new BoardDao(this.db);
+        dao.post(b);
+
     }
 }
