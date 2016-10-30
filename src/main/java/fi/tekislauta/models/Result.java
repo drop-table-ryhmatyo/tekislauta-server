@@ -1,5 +1,7 @@
 package fi.tekislauta.models;
 
+import java.util.Objects;
+
 /**
  * Created by Hugo on 14.10.2016.
  */
@@ -41,5 +43,19 @@ public class Result {
 
     public String getStatus() {
         return status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Result result = (Result) o;
+        return Objects.equals(status, result.status) &&
+            Objects.equals(data, result.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, data);
     }
 }
