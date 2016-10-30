@@ -55,7 +55,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
                 b.setDescription(rs.getString("description"));
                 res.add(b);
             }
-
+            
             return res;
         } catch (SQLException e) {
             throw new DaoException(e);
