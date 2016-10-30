@@ -1,5 +1,6 @@
 package fi.tekislauta.models;
 
+import java.util.Objects;
 import java.util.zip.CRC32;
 import java.security.MessageDigest;
 
@@ -87,5 +88,24 @@ public class Post {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id) &&
+            Objects.equals(board_abbrevition, post.board_abbrevition) &&
+            Objects.equals(topic_id, post.topic_id) &&
+            Objects.equals(ip, post.ip) &&
+            Objects.equals(post_time, post.post_time) &&
+            Objects.equals(subject, post.subject) &&
+            Objects.equals(message, post.message);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, board_abbrevition, topic_id, ip, post_time, subject, message);
     }
 }

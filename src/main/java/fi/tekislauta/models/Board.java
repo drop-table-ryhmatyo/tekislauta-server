@@ -1,5 +1,7 @@
 package fi.tekislauta.models;
 
+import java.util.Objects;
+
 public class Board {
 
     private String name;
@@ -36,5 +38,20 @@ public class Board {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return Objects.equals(name, board.name) &&
+            Objects.equals(abbreviation, board.abbreviation) &&
+            Objects.equals(description, board.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, abbreviation, description);
     }
 }
