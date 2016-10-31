@@ -101,7 +101,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         }
     }
 
-    public List<Post> findPageTopics(String board, String page) throws DaoException {
+    public Map<String, Object> findPageTopics(String board, String page) throws DaoException {
         if (boardDao.find(board) == null) {
             throw new DaoException("Cannot find board " + board);
         }
@@ -114,9 +114,12 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         }
 
         try {
-            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
-            statement.setString(1, board);
-            ResultSet rs = statement.executeQuery();
+            PreparedStatement postCountStatement = this.db.getConnection().prepareStatement("SELECT COUNT(*) FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL");
+            PreparedStatement postStatement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
+            postStatement.setString(1, board);
+            postCountStatement.setString(1, board);
+            ResultSet rs = postStatement.executeQuery();
+            ResultSet countRs = postCountStatement.executeQuery();
 
             ArrayList<Post> postList = new ArrayList<>();
 
@@ -133,7 +136,11 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
                 postList.add(p);
             }
 
-            return postList;
+            Map<String, Object> resMap = new HashMap<>();
+            resMap.put("total_count", countRs.getInt(1));
+            resMap.put("posts", postList);
+
+            return resMap;
         } catch (SQLException ex) {
             throw new DaoException(ex);
         }

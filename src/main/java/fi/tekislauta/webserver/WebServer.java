@@ -82,8 +82,7 @@ public class WebServer {
         }, gson::toJson);
 
         get("/api/boards/:board/posts/:page", (req, res) -> {
-            List<Post> posts = postDao.findPageTopics(req.params("board"), req.params("page"));
-            return Result.success(posts);
+            return Result.success(postDao.findPageTopics(req.params("board"), req.params("page")));
         }, gson::toJson);
 
         get("/api/jerry", (req, res) -> {
