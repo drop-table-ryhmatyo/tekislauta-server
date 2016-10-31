@@ -17,21 +17,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class PostDaoTest {
-    private static final String DATABASE_FILE = "./test.db";
+    private static final String DATABASE_URL = "jdbc:sqlite::memory:";
     private Database db;
     private PostDao dao;
 
     @Before
     public void setup() {
-        this.db = new Database("jdbc:sqlite:" + DATABASE_FILE);
+        this.db = new Database(DATABASE_URL);
         this.dao = new PostDao(db);
     }
 
     @After
     public void teardown() {
-        File f = new File(DATABASE_FILE);
-        if (f.exists()) {
-            f.delete();
-        }
     }
 }
