@@ -92,23 +92,23 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         }
     }
 
-    public Map<String, Object> findPageTopics(String board, String page) throws DaoException, ValidationException {
+    public Map<String, Object> findAllPaginated(String board, int offset) throws DaoException, ValidationException {
+        if (offset < 0) {
+            throw new ValidationException("Negative offsets are not supported!");
+        }
+
         if (boardDao.find(board) == null) {
             throw new ValidationException("Cannot find board " + board);
         }
 
-        int nPage;
-        try {
-            nPage = Integer.parseInt(page) <= 0 ? 0 : ((Integer.parseInt(page) - 1) * 10);
-        } catch (Exception e) {
-            throw new DaoException("1337", e);
-        }
-
         try {
             PreparedStatement postCountStatement = this.db.getConnection().prepareStatement("SELECT COUNT(*) FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL");
-            PreparedStatement postStatement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET " + nPage);
-            postStatement.setString(1, board);
             postCountStatement.setString(1, board);
+
+            PreparedStatement postStatement = this.db.getConnection().prepareStatement("SELECT * FROM Post p WHERE p.board_abbreviation = ? AND topic_id IS NULL LIMIT 10 OFFSET ?");
+            postStatement.setString(1, board);
+            postStatement.setInt(2, offset);
+
             ResultSet rs = postStatement.executeQuery();
             ResultSet countRs = postCountStatement.executeQuery();
 

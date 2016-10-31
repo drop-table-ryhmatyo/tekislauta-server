@@ -78,11 +78,12 @@ public class WebServer {
         }, gson::toJson);
 
         get("/api/boards/:board/posts/", (req, res) -> {
+            Integer offset = tryParseInteger(req.queryParams("start"));
+            if (offset != null) {
+                // user wants paginated stuff starting from offset `start`
+                return Result.success(postDao.findAllPaginated(req.params("board"), offset));
+            }
             return Result.success(postDao.findAll(req.params("board")));
-        }, gson::toJson);
-
-        get("/api/boards/:board/posts/:page", (req, res) -> {
-            return Result.success(postDao.findPageTopics(req.params("board"), req.params("page")));
         }, gson::toJson);
 
         get("/api/jerry", (req, res) -> {
