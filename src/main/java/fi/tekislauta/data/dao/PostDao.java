@@ -51,7 +51,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         }
 
         try {
-            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL LIMIT 10");
+            PreparedStatement statement = this.db.getConnection().prepareStatement("SELECT * FROM Post WHERE board_abbreviation = ? AND topic_id IS NULL");
             statement.setString(1, board);
             ResultSet rs = statement.executeQuery();
 
