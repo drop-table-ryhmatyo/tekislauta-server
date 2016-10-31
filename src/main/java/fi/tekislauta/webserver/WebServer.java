@@ -63,6 +63,13 @@ public class WebServer {
             res.body(gson.toJson(r));
         });
 
+        exception(Exception.class, (ex, req, res) -> {
+            dumpRequestException(req, ex);
+            res.status(500);
+            Result r = Result.error("A server error has occurred.");
+            res.body(gson.toJson(r));
+        });
+
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
@@ -138,6 +145,7 @@ public class WebServer {
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthorized(authHeader)) {
                 res.status(401); // unauthorized
+                res.header("WWW-Authenticate", "Basic realm=\"tekislauta\"");
                 return Result.unauthorized(null);
             }
 
@@ -149,6 +157,7 @@ public class WebServer {
             String authHeader = req.headers("Authorization");
             if (authHeader == null || !isAuthorized(authHeader)) {
                 res.status(401); // unauthorized
+                res.header("WWW-Authenticate", "Basic realm=\"tekislauta\"");
                 return Result.unauthorized(null);
             }
 
@@ -183,10 +192,14 @@ public class WebServer {
         }
     }
 
-    private boolean isAuthorized(String hdr) {
-        byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
-        String[] credentials = new String(decryptedHeader).split(":");
-        return (credentials[0].equals(USER) && credentials[1].equals(PW));
+    private boolean isAuthorized(String hdr) throws ValidationException {
+        try {
+            byte[] decryptedHeader = Base64.getDecoder().decode(hdr.split(" ")[1]);
+            String[] credentials = new String(decryptedHeader).split(":");
+            return (credentials[0].equals(USER) && credentials[1].equals(PW));
+        } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+            throw new ValidationException("Invalid authorization!");
+        }
     }
 }
 
