@@ -92,11 +92,11 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         }
     }
 
-    public Map<String, Object> findPageTopics(String board, String page) throws DaoException {
+    public Map<String, Object> findPageTopics(String board, String page) throws DaoException, ValidationException {
         if (boardDao.find(board) == null) {
-            throw new DaoException("Cannot find board " + board);
+            throw new ValidationException("Cannot find board " + board);
         }
-        if (page.isEmpty()) page = "1";
+
         int nPage;
         try {
             nPage = Integer.parseInt(page) <= 0 ? 0 : ((Integer.parseInt(page) - 1) * 10);
@@ -130,7 +130,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
     }
 
     @Override
-    public Post post(Post p) throws DaoException, ModelValidationException {
+    public Post post(Post p) throws DaoException, ValidationException {
         validateOnInsert(p);
 
         try {
@@ -138,10 +138,6 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
                 "INSERT INTO Post (board_abbreviation, topic_id, ip, post_time, subject, message) VALUES (?, ?, ?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS
             );
-
-            if (boardDao.find(p.getBoard_abbreviation()) == null) {
-                throw new DaoException("Cannot find board " + p.getBoard_abbreviation());
-            }
 
             statement.setString(1, p.getBoard_abbreviation());
             if (p.getTopic_id() == null)
@@ -175,17 +171,17 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
     }
 
     @Override
-    protected void validateOnInsert(Post objectToInsert) throws ModelValidationException {
-        if (objectToInsert == null)
-            throw new ModelValidationException(objectToInsert, "Post cannot be null!");
+    protected void validateOnInsert(Post post) throws ValidationException {
+        if (post == null)
+            throw new ValidationException("Post cannot be null!");
 
-        if (objectToInsert.getPost_time() == null)
-            throw new ModelValidationException(objectToInsert, "The post time of a post cannot be null!");
+        if (post.getPost_time() == null)
+            throw new ValidationException("The post time of a post cannot be null!");
         
         Map<String, String> propsNotNullOrEmpty = new HashMap<>();
-        propsNotNullOrEmpty.put("board abbreviation", objectToInsert.getBoard_abbreviation());
-        propsNotNullOrEmpty.put("ip", objectToInsert.getIp());
-        propsNotNullOrEmpty.put("message", objectToInsert.getMessage());
+        propsNotNullOrEmpty.put("board abbreviation", post.getBoard_abbreviation());
+        propsNotNullOrEmpty.put("ip", post.getIp());
+        propsNotNullOrEmpty.put("message", post.getMessage());
 
         // (board_abbreviation, topic_id, ip, post_time, subject, message)
         // topic_id CAN be null
@@ -193,11 +189,19 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
         // subject CAN be null
         for (Entry<String, String> pair : propsNotNullOrEmpty.entrySet()) {
             if (pair.getValue() == null || pair.getValue().trim().isEmpty()) {
-                throw new ModelValidationException(
-                    objectToInsert,
+                throw new ValidationException(
                     "The " + pair.getKey() + " of a post cannot be null or empty!"
                 );
             }
+        }
+
+        try {
+            if (boardDao.find(post.getBoard_abbreviation()) == null) {
+                throw new ValidationException("Cannot find board " + post.getBoard_abbreviation());
+            }
+        } catch (DaoException e) {
+            System.err.println("Caught an exception while validating post! ");
+            e.printStackTrace();
         }
     }
 }

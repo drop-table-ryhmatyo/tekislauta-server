@@ -5,7 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import fi.tekislauta.data.Database;
 import fi.tekislauta.data.dao.BoardDao;
 import fi.tekislauta.data.dao.DaoException;
-import fi.tekislauta.data.dao.ModelValidationException;
+import fi.tekislauta.data.dao.ValidationException;
 import fi.tekislauta.data.dao.PostDao;
 import fi.tekislauta.models.Board;
 import fi.tekislauta.models.Post;
@@ -44,15 +44,15 @@ public class WebServer {
             res.header("Content-Type", "application/json; charset=utf-8");
         });
 
-        exception(ModelValidationException.class, (exception, req, res) -> {
+        exception(ValidationException.class, (exception, req, res) -> {
             res.status(400); // "Bad request"
-            Result r = Result.error("Malformed request or missing data! " + exception.getMessage());
+            Result r = Result.error(exception.getMessage());
             res.body(gson.toJson(r));
         });
 
         exception(JsonSyntaxException.class, (ex, req, res) -> {
             res.status(400); // "Bad request"
-            Result r = Result.error("Malformed request! Please check your JSON syntax!");
+            Result r = Result.error("Please check your JSON syntax!");
             res.body(gson.toJson(r));
         });
 

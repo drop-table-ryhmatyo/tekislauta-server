@@ -2,14 +2,8 @@ package fi.tekislauta.test;
 
 import fi.tekislauta.data.Database;
 import fi.tekislauta.data.dao.PostDao;
-import fi.tekislauta.data.dao.ModelValidationException;
-import fi.tekislauta.data.dao.DaoException;
-import fi.tekislauta.models.Post;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
