@@ -12,9 +12,17 @@ import java.util.List;
  */
 public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<Board, String> {
     private final Database database;
+    private final Collector<Board> collector;
 
     public BoardDao(Database database) {
         this.database = database;
+        this.collector = rs -> {
+            Board b = new Board();
+            b.setName(rs.getString("name"));
+            b.setAbbreviation(rs.getString("abbreviation"));
+            b.setDescription(rs.getString("description"));
+            return b;
+        };
     }
 
     @Override
@@ -28,13 +36,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
             if (!rs.next())
                 return null;
 
-            Board b = new Board();
-
-            b.setName(rs.getString("name"));
-            b.setAbbreviation(rs.getString("abbreviation"));
-            b.setDescription(rs.getString("description"));
-
-            return b;
+            return this.collector.collect(rs);
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -49,10 +51,7 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
             ArrayList<Board> res = new ArrayList<>();
 
             while (rs.next()) {
-                Board b = new Board();
-                b.setName(rs.getString("name"));
-                b.setAbbreviation(rs.getString("abbreviation"));
-                b.setDescription(rs.getString("description"));
+                Board b = this.collector.collect(rs);
                 res.add(b);
             }
             

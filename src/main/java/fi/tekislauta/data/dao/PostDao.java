@@ -11,10 +11,21 @@ import java.util.Map.Entry;
 public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Post, String> {
     private final Database db;
     private final BoardDao boardDao;
+    private final Collector<Post> collector;
 
     public PostDao(Database db) {
         this.db = db;
         this.boardDao = new BoardDao(db);
+        this.collector = rs -> {
+            Post p = new Post();
+            p.setId(rs.getInt("id"));
+            p.setTopic_id((Integer) rs.getObject("topic_id"));
+            p.setIp(rs.getString("ip"));
+            p.setPost_time(rs.getInt("post_time"));
+            p.setSubject(rs.getString("subject"));
+            p.setMessage(rs.getString("message"));
+            return p;
+        };
     }
 
     @Override
@@ -27,15 +38,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             if (!rs.next())
                 return null;
 
-            Post p = new Post();
-            p.setId(rs.getInt("id"));
-            p.setTopic_id((Integer) rs.getObject("topic_id"));
-            p.setIp(rs.getString("ip"));
-            p.setPost_time(rs.getInt("post_time"));
-            p.setSubject(rs.getString("subject"));
-            p.setMessage(rs.getString("message"));
-
-            return p;
+            return this.collector.collect(rs);
         } catch (SQLException ex) {
             throw new DaoException(ex);
         }
@@ -55,14 +58,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             ArrayList<Post> postList = new ArrayList<>();
 
             while (rs.next()) {
-                Post p = new Post();
-                p.setId(rs.getInt("id"));
-                p.setTopic_id((Integer) rs.getObject("topic_id"));
-                p.setIp(rs.getString("ip"));
-                p.setPost_time(rs.getInt("post_time"));
-                p.setSubject(rs.getString("subject"));
-                p.setMessage(rs.getString("message"));
-
+                Post p = this.collector.collect(rs);
                 postList.add(p);
             }
             return postList;
@@ -86,14 +82,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             ArrayList<Post> postList = new ArrayList<>();
 
             while (rs.next()) {
-                Post p = new Post();
-                p.setId(rs.getInt("id"));
-                p.setTopic_id((Integer) rs.getObject("topic_id"));
-                p.setIp(rs.getString("ip"));
-                p.setPost_time(rs.getInt("post_time"));
-                p.setSubject(rs.getString("subject"));
-                p.setMessage(rs.getString("message"));
-
+                Post p = this.collector.collect(rs);
                 postList.add(p);
             }
 
@@ -126,15 +115,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             ArrayList<Post> postList = new ArrayList<>();
 
             while (rs.next()) {
-                Post p = new Post();
-
-                p.setId(rs.getInt("id"));
-                p.setTopic_id((Integer) rs.getObject("topic_id"));
-                p.setIp(rs.getString("ip"));
-                p.setPost_time(rs.getInt("post_time"));
-                p.setSubject(rs.getString("subject"));
-                p.setMessage(rs.getString("message"));
-
+                Post p = this.collector.collect(rs);
                 postList.add(p);
             }
 
