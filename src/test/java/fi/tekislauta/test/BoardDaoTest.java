@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -26,6 +28,14 @@ public class BoardDaoTest {
     public void setup() {
         this.db = new Database(DATABASE_URL);
         this.dao = new PostDao(db);
+
+        try {
+            Statement stmt = db.getConnection().createStatement();
+            stmt.executeUpdate("DELETE FROM Board;");
+            stmt.executeUpdate("DELETE FROM Post;");
+        } catch(SQLException ex) {
+
+        }
     }
 
     @After
@@ -99,11 +109,46 @@ public class BoardDaoTest {
 
     @Test
     public void deletedBoardIsDeleted() throws Exception {
+        String abbr = "tv", name = "Television";
         Board b = new Board();
-        b.setAbbreviation("tv");
-        b.setName("Television");
+        b.setAbbreviation(abbr);
+        b.setName(name);
+
         BoardDao dao = new BoardDao(this.db);
         dao.post(b);
+        // can be found before?
+        Board foundBefore = dao.find(abbr);
+        assertEquals(b, foundBefore);
+        dao.delete(abbr);
+        // should not be found after
+        Board foundAfter = dao.find(abbr);
+        assertNull(foundAfter);
+    }
 
+    @Test
+    public void boardDeletionDeletesPostsAsWell() throws Exception {
+        String abbr = "biz", name = "Business";
+        Board board = new Board(name, abbr, null);
+
+        BoardDao boardDao = new BoardDao(this.db);
+        boardDao.post(board);
+
+        PostDao postDao = new PostDao(this.db);
+        Post post = new Post();
+        post.setBoard_abbrevition(abbr);
+        post.setIp("123.123.123.123");
+        post.setMessage("ayy");
+        post.setSubject("lmao");
+        post.setPost_time(123);
+        Post createdPost = postDao.post(post);
+
+        // post is there at this point?
+        Post foundBefore = postDao.find(Integer.toString(createdPost.getId()));
+        assertEquals("Inserted post was not found before deletion!", createdPost, foundBefore);
+
+        boardDao.delete(abbr);
+        // post should be deleted now
+        Post foundAfter = postDao.find(Integer.toString(createdPost.getId()));
+        assertNull(foundAfter);
     }
 }

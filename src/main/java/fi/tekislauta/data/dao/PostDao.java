@@ -24,6 +24,8 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             statement.setString(1, filter);
 
             ResultSet rs = statement.executeQuery();
+            if (!rs.next())
+                return null;
 
             Post p = new Post();
             p.setId(rs.getInt("id"));
