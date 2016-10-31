@@ -64,6 +64,19 @@ Key | Description
 
 # Endpoints
 
+Path | Verb | Description
+-----|------|------------
+`/boards/` | GET | Returns an array of all boards. The `Board` response model is used.
+`/boards/` | POST | Creates a new board. The `Board` response model is used.
+`/boards/:abbreviation` | GET | Gets a specific board. The `Board` response model is used.
+`/boards/:abbreviation` | DELETE | Deletes a board. Requires basic authorization headers to be present.
+`/boards/:abbreviation/posts/topics/:topic` | GET | Gets all replies to a thread. `topic` is the post ID of the starting message.
+`/boards/:abbreviation/posts/topics/:topic` | POST | Creates a reply to a thread. The `Post` response model is used.
+`/boards/:abbreviation/posts/` | GET | Gets threads of a board. The `Post` response model is used.
+`/boards/:abbreviation/posts/` | POST | Creates a new thread on the specified board. The `Post` response model is used.
+`/posts/:post` | DELETE | Deletes a post or thread. If the specified post is a thread, all replies to it are also deleted. Requires basic authorization headers to be present.
+
+
 ## GET `/boards/`
 Returns an array of all boards. The `Board` response model is used.
 
@@ -247,6 +260,7 @@ Key | Required | Description
 Gets all replies to a thread. `topic` is the post ID of the starting message.
 
 ## POST `/boards/:abbreviation/posts/topics/:topic`
+Creates a reply to a thread. The `Post` response model is used.
 
 ### Parameters
 Key | Required | Description
