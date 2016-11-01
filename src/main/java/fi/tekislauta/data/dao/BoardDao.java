@@ -67,8 +67,9 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
             }
 
             // Amazing solution...
+            int s = res.size();
             for (Board b : this.findAll("")) {
-                for (int i = 0; i < res.size(); i++) {
+                for (int i = 0; i < s; i++) {
                     BoardResponse br = res.get(i);
                     if (!br.getBoard().getAbbreviation().equals(b.getAbbreviation())) {
                         BoardResponse bres = new BoardResponse();
