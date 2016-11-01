@@ -123,7 +123,7 @@ public class WebServer {
             }
 
             post.setBoard_abbrevition(req.params("board"));
-            post.setIp(req.ip());
+            post.setIp(req.headers("x-forwarded-for"));
             post.setPost_time(getUnixTimestamp());
             return Result.success(postDao.post(post));
         }, gson::toJson);
@@ -132,7 +132,7 @@ public class WebServer {
             Post p = gson.fromJson(req.body(), Post.class); // message and optionally subject should be there now
             p.setBoard_abbrevition(req.params("board"));
             p.setTopic_id(tryParseInteger(req.params("topic")));
-            p.setIp(req.ip());
+                    p.setIp(req.headers("x-forwarded-for"));
             p.setPost_time(getUnixTimestamp());
             return Result.success(postDao.post(p));
         }, gson::toJson);
