@@ -2,6 +2,8 @@ package fi.tekislauta.data.dao;
 
 import fi.tekislauta.data.Database;
 import fi.tekislauta.models.Board;
+import fi.tekislauta.models.BoardResponse;
+import fi.tekislauta.models.Post;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,6 +41,47 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
             return this.collector.collect(rs);
         } catch (SQLException e) {
             throw new DaoException(e);
+        }
+    }
+
+    public List<BoardResponse> getFrontpageBoardInfo() throws DaoException {
+        try {
+            PreparedStatement ps = this.database.getConnection().prepareStatement("select * from Board left join (select * from Post where topic_id is null order by post_time desc limit 2) as p where Board.abbreviation = p.board_abbreviation");
+            ResultSet rs = ps.executeQuery();
+
+            ArrayList<BoardResponse> res = new ArrayList<>();
+            while(rs.next()) {
+                BoardResponse br = new BoardResponse();
+                Post p = new Post();
+                p.setPost_time(rs.getInt("post_time"));
+                p.setBoard_abbrevition(rs.getString("abbreviation"));
+                p.setTopic_id(rs.getInt("topic_id"));
+                p.setId(rs.getInt("id"));
+                p.setIp(rs.getString("ip"));
+                p.setMessage(rs.getString("message"));
+                p.setSubject(rs.getString("subject"));
+                p.hashIp();
+                br.setTopic(p);
+                br.setBoard(this.collector.collect(rs));
+                res.add(br);
+            }
+
+            // Amazing solution...
+            for (Board b : this.findAll("")) {
+                for (int i = 0; i < res.size(); i++) {
+                    BoardResponse br = res.get(i);
+                    if (!br.getBoard().getAbbreviation().equals(b.getAbbreviation())) {
+                        BoardResponse bres = new BoardResponse();
+                        bres.setTopic(null);
+                        bres.setBoard(b);
+                        res.add(bres);
+                    }
+                }
+            }
+
+            return res;
+        } catch(SQLException e) {
+            throw new DaoException(e.getMessage());
         }
     }
 
@@ -122,6 +165,9 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
     protected void validateOnInsert(Board board) throws ValidationException {
         if (board == null)
             throw new ValidationException("Board cannot be null!");
+
+        if (board.getAbbreviation().contains("/"))
+            throw new ValidationException("Board abbreviation can not contain the char /");
 
         String abbr = board.getAbbreviation();
         if (abbr == null || abbr.trim().equals(""))
