@@ -50,11 +50,13 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
                 "SELECT Board.*, LatestPost.*\n" +
                     "FROM Board\n" +
                     "    LEFT JOIN (\n" +
-                    "        SELECT * FROM Post\n" +
-                    "        WHERE topic_id IS NULL\n" +
-                    "        ORDER BY post_time DESC LIMIT 1\n" +
-                    "    ) as LatestPost\n" +
-                    "    ON Board.abbreviation = LatestPost.board_abbreviation;"
+                    "        SELECT * FROM (\n" +
+                    "            SELECT * FROM Post\n" +
+                    "            WHERE topic_id IS NULL\n" +
+                    "            ORDER BY post_time\n" +
+                    "        ) GROUP BY board_abbreviation\n" +
+                    "    ) AS LatestPost\n" +
+                    "ON Board.abbreviation = LatestPost.board_abbreviation;"
             );
             ResultSet rs = ps.executeQuery();
 
@@ -81,20 +83,6 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
 
                 res.add(br);
             }
-
-            /*
-            int s = res.size();
-            for (Board b : this.findAll("")) {
-                for (int i = 0; i < s; i++) {
-                    BoardResponse br = res.get(i);
-                    if (!br.getBoard().getAbbreviation().equals(b.getAbbreviation())) {
-                        BoardResponse bres = new BoardResponse();
-                        bres.setLatestTopic(null);
-                        bres.setBoard(b);
-                        res.add(bres);
-                    }
-                }
-            }*/
 
             return res;
         } catch(SQLException e) {
