@@ -182,7 +182,15 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         if (name == null || name.trim().equals(""))
             throw new ValidationException("Name of a new board cannot be null or empty");
 
-        // description can be null or empty
+        if (board.getName().length() > 64)
+            throw new ValidationException("Name can be only 64 characters long!");
+
+        if (board.getAbbreviation().length() > 4)
+            throw new ValidationException("Abbreviation can only be 4 characters long!");
+
+        String desc = board.getDescription(); // description can be null or empty
+        if (desc != null && desc.length() > 1024)
+            throw new ValidationException("Description can be only 1024 characters long!");
     }
 
     private static boolean isEmptyPost(Post p) {

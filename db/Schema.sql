@@ -18,7 +18,7 @@ CREATE TABLE Post
     ip varchar(16) NOT NULL,
     post_time integer(4) NOT NULL DEFAULT (strftime('%s', 'now')),
     subject varchar(128) NULL,
-    message text NOT NULL,
+    message varchar(2048) NOT NULL,
 
     PRIMARY KEY (id),
     FOREIGN KEY (board_abbreviation) REFERENCES Board(abbreviation),

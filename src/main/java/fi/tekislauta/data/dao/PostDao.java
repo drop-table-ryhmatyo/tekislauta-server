@@ -205,5 +205,12 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             System.err.println("Caught an exception while validating post! ");
             e.printStackTrace();
         }
+
+        String subject = post.getSubject();
+        if (subject != null && subject.length() > 128)
+            throw new ValidationException("Subject can be max 128 characters!");
+
+        if (post.getMessage().length() > 2048)
+            throw new ValidationException("Message can be max 2048 characters!");
     }
 }
