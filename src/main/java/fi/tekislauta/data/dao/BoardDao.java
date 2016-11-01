@@ -167,12 +167,12 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
         if (board == null)
             throw new ValidationException("Board cannot be null!");
 
-        if (board.getAbbreviation().contains("/"))
-            throw new ValidationException("Board abbreviation can not contain the char /");
-
         String abbr = board.getAbbreviation();
         if (abbr == null || abbr.trim().equals(""))
             throw new ValidationException("Abbreviation of a new board cannot be null or empty");
+
+        if (board.getAbbreviation().contains("/"))
+            throw new ValidationException("Board abbreviation can not contain the char /");
 
         String name = board.getName();
         if (name == null || name.trim().equals(""))
