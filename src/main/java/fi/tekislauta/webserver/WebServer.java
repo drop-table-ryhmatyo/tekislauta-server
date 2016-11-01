@@ -138,6 +138,13 @@ public class WebServer {
         }, gson::toJson);
 
         post("/api/boards/", (req, res) -> {
+            String authHeader = req.headers("Authorization");
+            if (authHeader == null || !isAuthorized(authHeader)) {
+                res.status(401); // unauthorized
+                res.header("WWW-Authenticate", "Basic realm=\"tekislauta\"");
+                return Result.unauthorized(null);
+            }
+
             Board b = gson.fromJson(req.body(), Board.class);
             return Result.success(boardDao.post(b));
         }, gson::toJson);
