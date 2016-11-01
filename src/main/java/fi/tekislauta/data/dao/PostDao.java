@@ -24,6 +24,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             p.setPost_time(rs.getInt("post_time"));
             p.setSubject(rs.getString("subject"));
             p.setMessage(rs.getString("message"));
+            p.hashIp();
             return p;
         };
     }

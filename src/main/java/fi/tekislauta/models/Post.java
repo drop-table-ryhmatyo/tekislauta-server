@@ -54,9 +54,7 @@ public class Post {
         return ip;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
+    public void setIp(String ip) { this.ip = ip; }
 
     public void hashIp() {
         if (this.ip == null) return;
