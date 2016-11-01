@@ -46,39 +46,55 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
 
     public List<BoardResponse> getFrontpageBoardInfo() throws DaoException {
         try {
-            PreparedStatement ps = this.database.getConnection().prepareStatement("select * from Board left join (select * from Post where topic_id is null order by post_time desc limit 2) as p where Board.abbreviation = p.board_abbreviation");
+            PreparedStatement ps = this.database.getConnection().prepareStatement(
+                "SELECT Board.*, LatestPost.*\n" +
+                    "FROM Board\n" +
+                    "    LEFT JOIN (\n" +
+                    "        SELECT * FROM Post\n" +
+                    "        WHERE topic_id IS NULL\n" +
+                    "        ORDER BY post_time DESC LIMIT 1\n" +
+                    "    ) as LatestPost\n" +
+                    "    ON Board.abbreviation = LatestPost.board_abbreviation;"
+            );
             ResultSet rs = ps.executeQuery();
 
             ArrayList<BoardResponse> res = new ArrayList<>();
             while(rs.next()) {
                 BoardResponse br = new BoardResponse();
-                Post p = new Post();
-                p.setPost_time(rs.getInt("post_time"));
-                p.setBoard_abbrevition(rs.getString("abbreviation"));
-                p.setTopic_id(rs.getInt("topic_id"));
-                p.setId(rs.getInt("id"));
-                p.setIp(rs.getString("ip"));
-                p.setMessage(rs.getString("message"));
-                p.setSubject(rs.getString("subject"));
-                p.hashIp();
-                br.setTopic(p);
                 br.setBoard(this.collector.collect(rs));
+
+                Post latestThread = new Post();
+                latestThread.setPost_time(rs.getInt("post_time"));
+                latestThread.setTopic_id(rs.getInt("topic_id"));
+                latestThread.setId(rs.getInt("id"));
+                latestThread.setMessage(rs.getString("message"));
+                latestThread.setSubject(rs.getString("subject"));
+                latestThread.setIp(rs.getString("ip"));
+                latestThread.hashIp();
+
+                if (isEmptyPost(latestThread)) {
+                    latestThread = null;
+                } else {
+                    latestThread.setBoard_abbrevition(rs.getString("abbreviation"));
+                }
+                br.setLatestTopic(latestThread);
+
                 res.add(br);
             }
 
-            // Amazing solution...
+            /*
             int s = res.size();
             for (Board b : this.findAll("")) {
                 for (int i = 0; i < s; i++) {
                     BoardResponse br = res.get(i);
                     if (!br.getBoard().getAbbreviation().equals(b.getAbbreviation())) {
                         BoardResponse bres = new BoardResponse();
-                        bres.setTopic(null);
+                        bres.setLatestTopic(null);
                         bres.setBoard(b);
                         res.add(bres);
                     }
                 }
-            }
+            }*/
 
             return res;
         } catch(SQLException e) {
@@ -179,5 +195,13 @@ public class BoardDao extends ValidatingDao<Board> implements DataAccessObject<B
             throw new ValidationException("Name of a new board cannot be null or empty");
 
         // description can be null or empty
+    }
+
+    private static boolean isEmptyPost(Post p) {
+        return p.getTopic_id() == null || p.getTopic_id() == 0
+            && p.getIp() == null
+            && p.getPost_time() == null || p.getPost_time() == 0
+            && p.getSubject() == null
+            && p.getMessage() == null;
     }
 }

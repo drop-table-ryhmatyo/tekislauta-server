@@ -5,14 +5,14 @@ package fi.tekislauta.models;
  */
 public class BoardResponse {
     private Board board;
-    private Post topic;
+    private Post latestTopic;
 
-    public Post getTopic() {
-        return topic;
+    public Post getLatestTopic() {
+        return latestTopic;
     }
 
-    public void setTopic(Post topic) {
-        this.topic = topic;
+    public void setLatestTopic(Post latestTopic) {
+        this.latestTopic = latestTopic;
     }
 
 
