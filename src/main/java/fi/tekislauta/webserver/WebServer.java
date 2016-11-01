@@ -73,8 +73,10 @@ public class WebServer {
 
         // spark starts listening when first method listener is added, I think ~cx
         get("/api/boards/", (req, res) -> {
-            return Result.success(boardDao.findAll(""));
+            return Result.success(boardDao.getFrontpageBoardInfo());
         }, gson::toJson);
+
+
 
         get("/api/boards/:abbreviation", (req, res) -> {
             Board b = boardDao.find(req.params("abbreviation"));
