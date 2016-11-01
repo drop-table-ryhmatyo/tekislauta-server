@@ -153,6 +153,7 @@ public class PostDao extends ValidatingDao<Post> implements DataAccessObject<Pos
             ResultSet rs = statement.getGeneratedKeys();
             rs.next(); // Statement.RETURN_GENERATED_KEYS returns the created id
             p.setId(rs.getInt(1));
+            p.hashIp();
             return p;
         } catch (SQLException ex) {
             throw new DaoException(ex);

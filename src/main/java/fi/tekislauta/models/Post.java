@@ -55,6 +55,11 @@ public class Post {
     }
 
     public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public void hashIp() {
+        if (this.ip == null) return;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(ip.getBytes());
