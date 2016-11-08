@@ -2,7 +2,7 @@
 Our API is free for everyone to use and abuse! You can for example exploit our lazy back-end solutions, make a bot that deletes a post instantly when it's posted, or use the API like a sophisticated human being. 
 
 # Entrypoint
-`http://tekislauta-api.herokuapp.com/api`
+`http://droptable.tk/api`
 
 # Structure
 ```
